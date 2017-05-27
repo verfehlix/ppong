@@ -1,0 +1,82 @@
+[
+  {
+    "pos": {
+      "x": 0,
+      "y": 0
+    },
+    "posVar": {
+      "x": 0,
+      "y": 0
+    },
+    "speed": 231.4100586238815,
+    "speedVar": 201.22613793381,
+    "angle": 0,
+    "angleVar": 180.89585876608135,
+    "life": 0.5,
+    "lifeVar": 0,
+    "radius": 10.628670700132808,
+    "radiusVar": 21.4641213796064,
+    "textureAdditive": true,
+    "startScale": 0.53660303449016,
+    "startScaleVar": 0,
+    "endScale": 0.06707537931127,
+    "endScaleVar": 0,
+    "startColor": [
+      255,
+      255,
+      255,
+      1
+    ],
+    "startColorVar": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "endColor": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "endColorVar": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "colorList": [],
+    "gravity": {
+      "x": 0,
+      "y": 0
+    },
+    "radialAccel": -13.703499993292496,
+    "radialAccelVar": 0,
+    "tangentialAccel": 0,
+    "tangentialAccelVar": 0,
+    "texture": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAN0lEQVQYV2NkYGBgaP7f/h9Eg0AtYyUjI0iA6wEnTIzhm8J3BrhgDXc9Q8vXRlRBmFKwSmxmAgAhtB0eVILOXwAAAABJRU5ErkJgggAA",
+    "totalParticles": 178,
+    "emissionRate": 185.27283581288648,
+    "xEquation": "",
+    "yEquation": "",
+    "textureEnabled": true,
+    "active": true,
+    "duration": null,
+    "id": "bouce",
+    "aFactor": {
+      "x": 0,
+      "y": 0
+    },
+    "xFactor": {
+      "x": 0,
+      "y": 0
+    },
+    "border": {
+      "top": 200,
+      "left": 200,
+      "bottom": 200,
+      "right": 200
+    },
+    "zIndex": 0
+  }
+]
