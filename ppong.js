@@ -15,9 +15,9 @@ let ballLaunched = false
 let ballVelocity = 400
 
 let wallBounceEmitter
-
 let player1BounceEmitter
 let player2BounceEmitter
+let traceEmitter
 
 let player1WinEmitter
 let player2WinEmitter
@@ -25,13 +25,18 @@ let player2WinEmitter
 function preload() {
     game.load.image("bg","/assets/bg.png")
     game.load.image("bg_rep","/assets/bg_rep.png")
-    
+
+    game.load.image("square","/assets/square.png")
+
     game.load.image("paddle_blue","/assets/player_blue.png")
     game.load.image("paddle_pink","/assets/player_pink.png")
 
     game.load.image("ball","/assets/ball.png")
     game.load.image("wall","/assets/wall.png")
-    
+
+    game.load.image("trace","/assets/trace.png")
+
+
     game.load.image("particle1","/assets/particle1.png")
     game.load.image("particle2","/assets/particle2.png")
     game.load.image("particle3","/assets/particle3.png")
@@ -104,6 +109,27 @@ function create() {
     bottomLine.animations.add('lineMove')
     bottomLine.animations.play('lineMove', 100, true)
 
+    let squareTopLeft = game.add.sprite(16,16,"square")
+    squareTopLeft.anchor.setTo(0.5,0.5)
+
+    let squareTopRight = game.add.sprite(784,16,"square")
+    squareTopRight.anchor.setTo(0.5,0.5)
+
+    let squareBottomRight = game.add.sprite(784,584,"square")
+    squareBottomRight.anchor.setTo(0.5,0.5)
+
+    let squareBottomLeft = game.add.sprite(16,584,"square")
+    squareBottomLeft.anchor.setTo(0.5,0.5)
+
+    let squareMidTop = game.add.sprite(game.world.width / 2,16,"square")
+    squareMidTop.anchor.setTo(0.5,0.5)
+
+    let squareMideBottom = game.add.sprite(game.world.width / 2,584,"square")
+    squareMideBottom.anchor.setTo(0.5,0.5)
+
+    let squareKickoff = game.add.sprite(game.world.width / 2,game.world.height / 2,"square")
+    squareKickoff.anchor.setTo(0.5,0.5)
+
 
     // winning explosion
     player1WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 500)
@@ -139,24 +165,32 @@ function create() {
     // create ball
     ball = createBall(game.world.centerX, game.world.centerY)
     
-    wallBounceEmitter = game.add.emitter(0, 0, 500)
+    wallBounceEmitter = game.add.emitter(-1000, -1000, 500)
     wallBounceEmitter.makeParticles(['particle1','particle2','particle3'])
     wallBounceEmitter.setScale(2, 0, 2, 0, 1000)
     wallBounceEmitter.setAlpha(1, 0, 1000)
     
-    player1BounceEmitter = game.add.emitter(0, 0, 500)
+    player1BounceEmitter = game.add.emitter(-1000, -1000, 500)
     player1BounceEmitter.makeParticles(['particle1_blue','particle2_blue','particle3_blue'])
     player1BounceEmitter.setScale(1, 0, 1, 0, 1000)
     player1BounceEmitter.setAlpha(1, 0, 2000)
     player1BounceEmitter.setXSpeed(0,200)
     player1BounceEmitter.setYSpeed(-500,500)
 
-    player2BounceEmitter = game.add.emitter(0, 0, 500)
+    player2BounceEmitter = game.add.emitter(-1000, -1000, 500)
     player2BounceEmitter.makeParticles(['particle1_pink','particle2_pink','particle3_pink'])
     player2BounceEmitter.setScale(1, 0, 1, 0, 1000)
     player2BounceEmitter.setAlpha(1, 0, 2000)
     player2BounceEmitter.setXSpeed(-200,0)
     player2BounceEmitter.setYSpeed(-500,500)
+
+    traceEmitter = game.add.emitter(-1000,-1000,500)
+    traceEmitter.makeParticles('trace')
+    traceEmitter.setScale(1, 0.5, 1, 0.5, 500)
+    traceEmitter.setAlpha(0.5, 0, 500)
+    traceEmitter.setXSpeed(0,0)
+    traceEmitter.setYSpeed(0,0)
+    traceEmitter.gravity = 0
 
     emitBounceParticles(wallBounceEmitter)
     emitBounceParticles(player1BounceEmitter)
@@ -223,6 +257,9 @@ function update() {
 
     player2BounceEmitter.x = ball.body.x
     player2BounceEmitter.y = ball.body.y
+
+    traceEmitter.x = ball.body.x + 0.5 * ball.width
+    traceEmitter.y = ball.body.y + 0.5 * ball.height
 }
 
 function emitBounceParticles(emitter) {
@@ -231,6 +268,14 @@ function emitBounceParticles(emitter) {
     const amount = 10
 
     emitter.start(explode, lifeSpan, null, amount)
+}
+
+function emitTraceParticles(emitter) {
+    const explode = false
+    const lifeSpan = 500
+    const particlesPerFrame = 2
+
+    emitter.start(explode, lifeSpan, particlesPerFrame)
 }
 
 function emitWinParticles(emitter) {
@@ -270,8 +315,6 @@ function createPaddle(x,y, group, name) {
         paddle = group.create(x,y,"paddle_pink")        
     }
         
-    // paddle.scale.setTo(0.5,0.5)
-
     paddle.anchor.setTo(0.5,0.5)
     
     game.physics.arcade.enable(paddle)
@@ -300,8 +343,6 @@ function controlPaddle(paddle,y) {
 function createBall(x,y) {
     let ball = game.add.sprite(x,y,"ball")
     
-    // ball.scale.setTo(1.25,1.25)
-
     ball.anchor.setTo(0.5,0.5)
     
     game.physics.arcade.enable(ball)
@@ -344,6 +385,9 @@ function launchBall() {
 
         ball.body.velocity.x = factor1 * game.rnd.integerInRange(450, 500)
         ball.body.velocity.y = factor2 * game.rnd.integerInRange(450, 500)
+
+        emitTraceParticles(traceEmitter)
+
         ballLaunched = true
     }
 }
