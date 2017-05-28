@@ -3,7 +3,6 @@ let game = new Phaser.Game(800,600,Phaser.AUTO,'',{
     create: create,
     update: update
 }, false, false)
-// })
 
 let paddle1
 let paddle2
@@ -22,57 +21,56 @@ let traceEmitter
 let player1WinEmitter
 let player2WinEmitter
 
+let scorePlayer1
+let scorePlayer2
+
+let bmpTextScorePlayer1
+let bmpTextScorePlayer2
+
 function preload() {
-    game.load.image("bg","/assets/bg.png")
-    game.load.image("bg_rep","/assets/bg_rep.png")
+    // background & decorations
+    game.load.image("bg","/assets/background/bg.png")
+    game.load.spritesheet('line_green', '/assets/background/line_green.png', 16, 32, 32)
+    game.load.spritesheet('line_blue', '/assets/background/line_blue.png', 16, 32, 32)
+    game.load.spritesheet('line_pink', '/assets/background/line_pink.png', 16, 32, 32)
+    game.load.image("mid_point","/assets/background/mid_point.png")
+    game.load.image("square","/assets/background/square.png")
+    game.load.image("wall","/assets/background/wall.png")
 
-    game.load.image("square","/assets/square.png")
-
+    // paddles & ball
     game.load.image("paddle_blue","/assets/player_blue.png")
     game.load.image("paddle_pink","/assets/player_pink.png")
-
     game.load.image("ball","/assets/ball.png")
-    game.load.image("wall","/assets/wall.png")
 
-    game.load.image("trace","/assets/trace.png")
+    // particles for emitters
+    game.load.image("particle1_green","/assets/particles/particle1_green.png")
+    game.load.image("particle2_green","/assets/particles/particle2_green.png")
+    game.load.image("particle3_green","/assets/particles/particle3_green.png")
+    game.load.image("particle1_blue","/assets/particles/particle1_blue.png")
+    game.load.image("particle2_blue","/assets/particles/particle2_blue.png")
+    game.load.image("particle3_blue","/assets/particles/particle3_blue.png")
+    game.load.image("particle1_pink","/assets/particles/particle1_pink.png")
+    game.load.image("particle2_pink","/assets/particles/particle2_pink.png")
+    game.load.image("particle3_pink","/assets/particles/particle3_pink.png")
+    game.load.image("trace","/assets/particles/trace.png")
 
-
-    game.load.image("particle1","/assets/particle1.png")
-    game.load.image("particle2","/assets/particle2.png")
-    game.load.image("particle3","/assets/particle3.png")
-
-    game.load.image("particle1_blue","/assets/particle1_blue.png")
-    game.load.image("particle2_blue","/assets/particle2_blue.png")
-    game.load.image("particle3_blue","/assets/particle3_blue.png")
-    
-    game.load.image("particle1_pink","/assets/particle1_pink.png")
-    game.load.image("particle2_pink","/assets/particle2_pink.png")
-    game.load.image("particle3_pink","/assets/particle3_pink.png")
-    
-    game.load.spritesheet('line', 'assets/line.png', 16, 32, 32)
-    game.load.spritesheet('line_blue', 'assets/line_blue.png', 16, 32, 32)
-    game.load.spritesheet('line_pink', 'assets/line_pink.png', 16, 32, 32)
-
-    game.load.image("mid_point","/assets/mid_point.png")
-
+    // fonts
+    game.load.bitmapFont('VCR_OSD_MONO', 'assets/fonts/VCR_OSD_MONO_2.png', 'assets/fonts/VCR_OSD_MONO.xml');
 
 }
 
 function create() {
+    // create background stuff
+    let bg = game.add.tileSprite(-100, -100, 1000, 800, "bg")
+    bg.alpha = 0.4
 
-    game.stage.smoothing = false; 
-
-    // create background
-    let bg = game.add.tileSprite(-100, -100, 1000, 800, "bg_rep")
-    bg.alpha = 0.5
-
-    let midLine1 = game.add.tileSprite(game.world.width / 2, game.world.height / 4, 16, 268, 'line')
+    let midLine1 = game.add.tileSprite(game.world.width / 2, game.world.height / 4, 16, 268, 'line_green')
     midLine1.anchor.setTo(0.5,0.5)
     midLine1.alpha = 1
     midLine1.animations.add('lineMove')
     midLine1.animations.play('lineMove', 100, true)
 
-    let midLine2 = game.add.tileSprite(game.world.width / 2, game.world.height * 3/4, 16, 268, 'line')
+    let midLine2 = game.add.tileSprite(game.world.width / 2, game.world.height * 3/4, 16, 268, 'line_green')
     midLine2.anchor.setTo(0.5,0.5)
     midLine2.alpha = 1
     midLine2.angle = 180
@@ -95,14 +93,14 @@ function create() {
     rightLine.animations.add('lineMove')
     rightLine.animations.play('lineMove', 100, true)
 
-    let topLine = game.add.tileSprite(game.world.width / 2, 16, 16, 768, 'line')
+    let topLine = game.add.tileSprite(game.world.width / 2, 16, 16, 768, 'line_green')
     topLine.anchor.setTo(0.5,0.5)
     topLine.alpha = 1
     topLine.angle = 90
     topLine.animations.add('lineMove')
     topLine.animations.play('lineMove', 100, true)
 
-    let bottomLine = game.add.tileSprite(game.world.width / 2, 584, 16, 768, 'line')
+    let bottomLine = game.add.tileSprite(game.world.width / 2, 584, 16, 768, 'line_green')
     bottomLine.anchor.setTo(0.5,0.5)
     bottomLine.alpha = 1
     bottomLine.angle = 270
@@ -130,8 +128,17 @@ function create() {
     let squareKickoff = game.add.sprite(game.world.width / 2,game.world.height / 2,"square")
     squareKickoff.anchor.setTo(0.5,0.5)
 
+    // reset scores
+    scorePlayer1 = 0
+    scorePlayer2 = 0
 
-    // winning explosion
+    // display scores
+    // bmpTextScorePlayer1 = game.add.bitmapText(50, 50, 'VCR_OSD_MONO', '' + scorePlayer1, 512)
+    // bmpTextScorePlayer1.alpha = 0.2
+
+    // bmpTextScorePlayer2 = game.add.bitmapText(500, 500, 'VCR_OSD_MONO', '' + scorePlayer2, 32)
+
+    // create particle emitters for winning explosion
     player1WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 500)
     player1WinEmitter.makeParticles(['particle1_blue','particle2_blue','particle3_blue'])
     player1WinEmitter.setScale(10, 0, 10, 0, 2000)
@@ -165,8 +172,9 @@ function create() {
     // create ball
     ball = createBall(game.world.centerX, game.world.centerY)
     
+    // create emitters for the ball
     wallBounceEmitter = game.add.emitter(-1000, -1000, 500)
-    wallBounceEmitter.makeParticles(['particle1','particle2','particle3'])
+    wallBounceEmitter.makeParticles(['particle1_green','particle2_green','particle3_green'])
     wallBounceEmitter.setScale(2, 0, 2, 0, 1000)
     wallBounceEmitter.setAlpha(1, 0, 1000)
     
@@ -192,11 +200,14 @@ function create() {
     traceEmitter.setYSpeed(0,0)
     traceEmitter.gravity = 0
 
+    // pre-emit all emitters off screen to prevent initial fps drop on first emit
     emitBounceParticles(wallBounceEmitter)
     emitBounceParticles(player1BounceEmitter)
     emitBounceParticles(player2BounceEmitter)
 
-    // input handling
+
+
+    // add left-mouseklick event handler for input handling
     game.input.onDown.add(launchBall, this)
 }
 
@@ -204,14 +215,12 @@ function update() {
     // handle user input via mouse
     controlPaddle(paddle1, game.input.y)
 
-    // handle second paddle movement
-    // paddle2.body.velocity.setTo(0, Math.min(300,ball.body.velocity.y))
-    // paddle2.body.velocity.setTo(0, ball.body.velocity.y)
+    // handle second (CPU) paddle movement --> perfect enemy, always hits the ball
     controlPaddle(paddle2, ball.y)
 
     // Ball Collision Detection
     
-    // collision with bottom & top walls --> only shake camera and bounce
+    // collision with bottom & top walls
     game.physics.arcade.collide(ball, topBottomWalls, function(ball, topBottomWalls){
         game.camera.shake(0.01, 100)
         
@@ -226,7 +235,7 @@ function update() {
         emitBounceParticles(wallBounceEmitter)
     })
 
-    // collision with left & right walls --> shake camera longer and reset ball
+    // collision with goals
     game.physics.arcade.collide(ball, sideWalls, function(ball, sideWalls){
         launchBall()
         game.camera.shake(0.03, 1000)
@@ -237,7 +246,7 @@ function update() {
         }
     })
 
-    // shake collision with bottom & top walls --> only shake camera and bounce
+    // collision with paddles
     game.physics.arcade.collide(ball, paddles, function(ball, paddles){
         game.camera.shake(0.01, 100)
         
@@ -248,7 +257,7 @@ function update() {
         }
     })
 
-    // Ball Emitter Upadte
+    // Update Ball Emitters
     wallBounceEmitter.x = ball.body.x
     wallBounceEmitter.y = ball.body.y
 
