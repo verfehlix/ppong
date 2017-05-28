@@ -2,7 +2,8 @@ let game = new Phaser.Game(800,600,Phaser.AUTO,'',{
     preload: preload,
     create: create,
     update: update
-})
+}, false, false)
+// })
 
 let paddle1
 let paddle2
@@ -54,7 +55,7 @@ function preload() {
 
 function create() {
 
-    game.time.advancedTiming = true
+    game.stage.smoothing = false; 
 
     // create background
     let bg = game.add.tileSprite(-100, -100, 1000, 800, "bg_rep")
@@ -105,20 +106,19 @@ function create() {
 
 
     // winning explosion
-    player1WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 5000)
+    player1WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 500)
     player1WinEmitter.makeParticles(['particle1_blue','particle2_blue','particle3_blue'])
     player1WinEmitter.setScale(10, 0, 10, 0, 2000)
     player1WinEmitter.setAlpha(1, 0, 2000)
     player1WinEmitter.setXSpeed(-1000,1000)
     player1WinEmitter.setYSpeed(-1000,1000)
 
-    player2WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 5000)
+    player2WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 500)
     player2WinEmitter.makeParticles(['particle1_pink','particle2_pink','particle3_pink'])
     player2WinEmitter.setScale(10, 0, 10, 0, 2000)
     player2WinEmitter.setAlpha(1, 0, 2000)
     player2WinEmitter.setXSpeed(-1000,1000)
     player2WinEmitter.setYSpeed(-1000,1000)
-
 
     // create walls
     topBottomWalls = createCollisionGroup()
@@ -139,26 +139,24 @@ function create() {
     // create ball
     ball = createBall(game.world.centerX, game.world.centerY)
     
-    wallBounceEmitter = game.add.emitter(0, 0, 5000)
+    wallBounceEmitter = game.add.emitter(0, 0, 500)
     wallBounceEmitter.makeParticles(['particle1','particle2','particle3'])
     wallBounceEmitter.setScale(2, 0, 2, 0, 1000)
     wallBounceEmitter.setAlpha(1, 0, 1000)
-    wallBounceEmitter.setXSpeed(-500,500)
-    wallBounceEmitter.setYSpeed(-500,500)
     
-    player1BounceEmitter = game.add.emitter(0, 0, 5000)
+    player1BounceEmitter = game.add.emitter(0, 0, 500)
     player1BounceEmitter.makeParticles(['particle1_blue','particle2_blue','particle3_blue'])
-    player1BounceEmitter.setScale(2, 0, 2, 0, 1000)
-    player1BounceEmitter.setAlpha(1, 0, 1000)
-    player1BounceEmitter.setXSpeed(0,500)
-    player1BounceEmitter.setYSpeed(-100,100)
+    player1BounceEmitter.setScale(1, 0, 1, 0, 1000)
+    player1BounceEmitter.setAlpha(1, 0, 2000)
+    player1BounceEmitter.setXSpeed(0,200)
+    player1BounceEmitter.setYSpeed(-500,500)
 
-    player2BounceEmitter = game.add.emitter(0, 0, 5000)
+    player2BounceEmitter = game.add.emitter(0, 0, 500)
     player2BounceEmitter.makeParticles(['particle1_pink','particle2_pink','particle3_pink'])
-    player2BounceEmitter.setScale(2, 0, 2, 0, 1000)
-    player2BounceEmitter.setAlpha(1, 0, 1000)
-    player2BounceEmitter.setXSpeed(-500,0)
-    player2BounceEmitter.setYSpeed(-100,100)
+    player2BounceEmitter.setScale(1, 0, 1, 0, 1000)
+    player2BounceEmitter.setAlpha(1, 0, 2000)
+    player2BounceEmitter.setXSpeed(-200,0)
+    player2BounceEmitter.setYSpeed(-500,500)
 
     emitBounceParticles(wallBounceEmitter)
     emitBounceParticles(player1BounceEmitter)
@@ -174,8 +172,8 @@ function update() {
 
     // handle second paddle movement
     // paddle2.body.velocity.setTo(0, Math.min(300,ball.body.velocity.y))
-    paddle2.body.velocity.setTo(0, ball.body.velocity.y)
-
+    // paddle2.body.velocity.setTo(0, ball.body.velocity.y)
+    controlPaddle(paddle2, ball.y)
 
     // Ball Collision Detection
     
@@ -184,11 +182,11 @@ function update() {
         game.camera.shake(0.01, 100)
         
         if(topBottomWalls.name === "top"){
-            wallBounceEmitter.setXSpeed(-200,200)
-            wallBounceEmitter.setYSpeed(0,500)
+            wallBounceEmitter.setXSpeed(-500,500)
+            wallBounceEmitter.setYSpeed(0,200)
         } else if (topBottomWalls.name === "bottom") {
-            wallBounceEmitter.setXSpeed(-200,200)            
-            wallBounceEmitter.setYSpeed(-500,0)
+            wallBounceEmitter.setXSpeed(-500,500)            
+            wallBounceEmitter.setYSpeed(-200,0)
         }
 
         emitBounceParticles(wallBounceEmitter)
@@ -230,7 +228,7 @@ function update() {
 function emitBounceParticles(emitter) {
     const explode = true
     const lifeSpan = 1000
-    const amount = 25
+    const amount = 10
 
     emitter.start(explode, lifeSpan, null, amount)
 }
@@ -272,7 +270,7 @@ function createPaddle(x,y, group, name) {
         paddle = group.create(x,y,"paddle_pink")        
     }
         
-    paddle.scale.setTo(0.5,0.5)
+    // paddle.scale.setTo(0.5,0.5)
 
     paddle.anchor.setTo(0.5,0.5)
     
@@ -283,6 +281,8 @@ function createPaddle(x,y, group, name) {
     paddle.body.immovable = true
     
     paddle.name = name
+
+    paddle.smoothed = false
 
     return paddle
 }
@@ -300,13 +300,15 @@ function controlPaddle(paddle,y) {
 function createBall(x,y) {
     let ball = game.add.sprite(x,y,"ball")
     
-    ball.scale.setTo(0.5,0.5)
+    // ball.scale.setTo(1.25,1.25)
 
     ball.anchor.setTo(0.5,0.5)
     
     game.physics.arcade.enable(ball)
     
     ball.body.bounce.setTo(1.05,1.05)
+
+    ball.smoothed = false
 
     return ball
 }
