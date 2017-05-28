@@ -13,41 +13,111 @@ let sideWalls
 let ballLaunched = false
 let ballVelocity = 400
 
-let ballEmitterBounce
-let winEmitter
+let wallBounceEmitter
+
+let player1BounceEmitter
+let player2BounceEmitter
+
+let player1WinEmitter
+let player2WinEmitter
 
 function preload() {
     game.load.image("bg","/assets/bg.png")
     game.load.image("bg_rep","/assets/bg_rep.png")
     
-    game.load.image("paddle","/assets/player.png")
+    game.load.image("paddle_blue","/assets/player_blue.png")
+    game.load.image("paddle_pink","/assets/player_pink.png")
+
     game.load.image("ball","/assets/ball.png")
     game.load.image("wall","/assets/wall.png")
     
     game.load.image("particle1","/assets/particle1.png")
     game.load.image("particle2","/assets/particle2.png")
     game.load.image("particle3","/assets/particle3.png")
+
+    game.load.image("particle1_blue","/assets/particle1_blue.png")
+    game.load.image("particle2_blue","/assets/particle2_blue.png")
+    game.load.image("particle3_blue","/assets/particle3_blue.png")
+    
+    game.load.image("particle1_pink","/assets/particle1_pink.png")
+    game.load.image("particle2_pink","/assets/particle2_pink.png")
+    game.load.image("particle3_pink","/assets/particle3_pink.png")
     
     game.load.spritesheet('line', 'assets/line.png', 16, 32, 32)
+    game.load.spritesheet('line_blue', 'assets/line_blue.png', 16, 32, 32)
+    game.load.spritesheet('line_pink', 'assets/line_pink.png', 16, 32, 32)
+
+    game.load.image("mid_point","/assets/mid_point.png")
 
 
 }
 
 function create() {
+
+    game.time.advancedTiming = true
+
     // create background
     let bg = game.add.tileSprite(-100, -100, 1000, 800, "bg_rep")
     bg.alpha = 0.5
 
-    let divider = game.add.tileSprite(game.world.width / 2, game.world.height / 2, 10, 600, "wall")
-    divider.anchor.setTo(0.5,0.5)
-    divider.alpha = 0.3
+    let midLine1 = game.add.tileSprite(game.world.width / 2, game.world.height / 4, 16, 268, 'line')
+    midLine1.anchor.setTo(0.5,0.5)
+    midLine1.alpha = 1
+    midLine1.animations.add('lineMove')
+    midLine1.animations.play('lineMove', 100, true)
+
+    let midLine2 = game.add.tileSprite(game.world.width / 2, game.world.height * 3/4, 16, 268, 'line')
+    midLine2.anchor.setTo(0.5,0.5)
+    midLine2.alpha = 1
+    midLine2.angle = 180
+    midLine2.animations.add('lineMove')
+    midLine2.animations.play('lineMove', 100, true)
+
+    let midPoint = game.add.sprite(game.world.width / 2, game.world.height / 2,"mid_point")
+    midPoint.anchor.setTo(0.5,0.5)
+
+    let leftLine = game.add.tileSprite(16, game.world.height / 2, 16, 568, 'line_blue')
+    leftLine.anchor.setTo(0.5,0.5)
+    leftLine.alpha = 1
+    leftLine.animations.add('lineMove')
+    leftLine.animations.play('lineMove', 100, true)
+
+    let rightLine = game.add.tileSprite(784, game.world.height / 2, 16, 568, 'line_pink')
+    rightLine.anchor.setTo(0.5,0.5)
+    rightLine.alpha = 1
+    rightLine.angle = 180
+    rightLine.animations.add('lineMove')
+    rightLine.animations.play('lineMove', 100, true)
+
+    let topLine = game.add.tileSprite(game.world.width / 2, 16, 16, 768, 'line')
+    topLine.anchor.setTo(0.5,0.5)
+    topLine.alpha = 1
+    topLine.angle = 90
+    topLine.animations.add('lineMove')
+    topLine.animations.play('lineMove', 100, true)
+
+    let bottomLine = game.add.tileSprite(game.world.width / 2, 584, 16, 768, 'line')
+    bottomLine.anchor.setTo(0.5,0.5)
+    bottomLine.alpha = 1
+    bottomLine.angle = 270
+    bottomLine.animations.add('lineMove')
+    bottomLine.animations.play('lineMove', 100, true)
 
 
-    let line = game.add.tileSprite(game.world.width / 2, game.world.height / 2, 16, 600, 'line')
-    line.anchor.setTo(0.5,0.5)
-    line.alpha = 0.5
-    line.animations.add('lineMove')
-    line.animations.play('lineMove', 32, true)
+    // winning explosion
+    player1WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 5000)
+    player1WinEmitter.makeParticles(['particle1_blue','particle2_blue','particle3_blue'])
+    player1WinEmitter.setScale(10, 0, 10, 0, 2000)
+    player1WinEmitter.setAlpha(1, 0, 2000)
+    player1WinEmitter.setXSpeed(-1000,1000)
+    player1WinEmitter.setYSpeed(-1000,1000)
+
+    player2WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 5000)
+    player2WinEmitter.makeParticles(['particle1_pink','particle2_pink','particle3_pink'])
+    player2WinEmitter.setScale(10, 0, 10, 0, 2000)
+    player2WinEmitter.setAlpha(1, 0, 2000)
+    player2WinEmitter.setXSpeed(-1000,1000)
+    player2WinEmitter.setYSpeed(-1000,1000)
 
 
     // create walls
@@ -69,22 +139,30 @@ function create() {
     // create ball
     ball = createBall(game.world.centerX, game.world.centerY)
     
-    ballEmitterBounce = game.add.emitter(0, 0, 5000)
-    ballEmitterBounce.makeParticles(['particle1','particle2','particle3'])
-    ballEmitterBounce.setScale(2, 0, 2, 0, 1000)
-    ballEmitterBounce.setAlpha(1, 0, 1000)
-    ballEmitterBounce.setXSpeed(-500,500)
-    ballEmitterBounce.setYSpeed(-500,500)
+    wallBounceEmitter = game.add.emitter(0, 0, 5000)
+    wallBounceEmitter.makeParticles(['particle1','particle2','particle3'])
+    wallBounceEmitter.setScale(2, 0, 2, 0, 1000)
+    wallBounceEmitter.setAlpha(1, 0, 1000)
+    wallBounceEmitter.setXSpeed(-500,500)
+    wallBounceEmitter.setYSpeed(-500,500)
     
-    emitBallParticles()
+    player1BounceEmitter = game.add.emitter(0, 0, 5000)
+    player1BounceEmitter.makeParticles(['particle1_blue','particle2_blue','particle3_blue'])
+    player1BounceEmitter.setScale(2, 0, 2, 0, 1000)
+    player1BounceEmitter.setAlpha(1, 0, 1000)
+    player1BounceEmitter.setXSpeed(0,500)
+    player1BounceEmitter.setYSpeed(-100,100)
 
+    player2BounceEmitter = game.add.emitter(0, 0, 5000)
+    player2BounceEmitter.makeParticles(['particle1_pink','particle2_pink','particle3_pink'])
+    player2BounceEmitter.setScale(2, 0, 2, 0, 1000)
+    player2BounceEmitter.setAlpha(1, 0, 1000)
+    player2BounceEmitter.setXSpeed(-500,0)
+    player2BounceEmitter.setYSpeed(-100,100)
 
-    winEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 5000)
-    winEmitter.makeParticles(['particle1','particle2','particle3'])
-    winEmitter.setScale(10, 0, 10, 0, 2000)
-    winEmitter.setAlpha(1, 0, 2000)
-    winEmitter.setXSpeed(-1000,1000)
-    winEmitter.setYSpeed(-1000,1000)
+    emitBounceParticles(wallBounceEmitter)
+    emitBounceParticles(player1BounceEmitter)
+    emitBounceParticles(player2BounceEmitter)
 
     // input handling
     game.input.onDown.add(launchBall, this)
@@ -106,21 +184,25 @@ function update() {
         game.camera.shake(0.01, 100)
         
         if(topBottomWalls.name === "top"){
-            ballEmitterBounce.setXSpeed(-200,200)
-            ballEmitterBounce.setYSpeed(0,500)
+            wallBounceEmitter.setXSpeed(-200,200)
+            wallBounceEmitter.setYSpeed(0,500)
         } else if (topBottomWalls.name === "bottom") {
-            ballEmitterBounce.setXSpeed(-200,200)            
-            ballEmitterBounce.setYSpeed(-500,0)
+            wallBounceEmitter.setXSpeed(-200,200)            
+            wallBounceEmitter.setYSpeed(-500,0)
         }
 
-        emitBallParticles()
+        emitBounceParticles(wallBounceEmitter)
     })
 
     // collision with left & right walls --> shake camera longer and reset ball
     game.physics.arcade.collide(ball, sideWalls, function(ball, sideWalls){
         launchBall()
         game.camera.shake(0.03, 1000)
-        emitWinParticles()
+        if(sideWalls.name === "left"){
+            emitWinParticles(player2WinEmitter)
+        } else if (sideWalls.name === "right") {
+            emitWinParticles(player1WinEmitter)
+        }
     })
 
     // shake collision with bottom & top walls --> only shake camera and bounce
@@ -128,36 +210,37 @@ function update() {
         game.camera.shake(0.01, 100)
         
         if(paddles.name === "player1"){
-            ballEmitterBounce.setXSpeed(0,250)
-            ballEmitterBounce.setYSpeed(-100,100)
+            emitBounceParticles(player1BounceEmitter)
         } else if (paddles.name === "player2") {
-            ballEmitterBounce.setXSpeed(-250,0)            
-            ballEmitterBounce.setYSpeed(-100,100)
+            emitBounceParticles(player2BounceEmitter)
         }
-
-        emitBallParticles()
     })
 
     // Ball Emitter Upadte
-    ballEmitterBounce.x = ball.body.x
-    ballEmitterBounce.y = ball.body.y
+    wallBounceEmitter.x = ball.body.x
+    wallBounceEmitter.y = ball.body.y
 
+    player1BounceEmitter.x = ball.body.x
+    player1BounceEmitter.y = ball.body.y
+
+    player2BounceEmitter.x = ball.body.x
+    player2BounceEmitter.y = ball.body.y
 }
 
-function emitBallParticles() {
+function emitBounceParticles(emitter) {
     const explode = true
     const lifeSpan = 1000
     const amount = 25
 
-    ballEmitterBounce.start(explode, lifeSpan, null, amount)
+    emitter.start(explode, lifeSpan, null, amount)
 }
 
-function emitWinParticles() {
+function emitWinParticles(emitter) {
     const explode = true
     const lifeSpan = 2000
     const amount = 100
 
-    winEmitter.start(explode, lifeSpan, null, amount)
+    emitter.start(explode, lifeSpan, null, amount)
 }
 
 
@@ -181,7 +264,13 @@ function createWall(x,y,group,width,height,name) {
 }
 
 function createPaddle(x,y, group, name) {
-    let paddle = group.create(x,y,"paddle")
+    let paddle
+    
+    if(name === "player1") {
+        paddle = group.create(x,y,"paddle_blue")
+    } else if (name === "player2") {
+        paddle = group.create(x,y,"paddle_pink")        
+    }
         
     paddle.scale.setTo(0.5,0.5)
 
@@ -251,8 +340,8 @@ function launchBall() {
             factor2 = -1
         }
 
-        ball.body.velocity.x = factor1 * game.rnd.integerInRange(300, 400)
-        ball.body.velocity.y = factor2 * game.rnd.integerInRange(300, 400)
+        ball.body.velocity.x = factor1 * game.rnd.integerInRange(450, 500)
+        ball.body.velocity.y = factor2 * game.rnd.integerInRange(450, 500)
         ballLaunched = true
     }
 }
