@@ -55,7 +55,9 @@ function preload() {
     game.load.image("trace","/assets/particles/trace.png")
 
     // fonts
-    game.load.bitmapFont('VCR_OSD_MONO', 'assets/fonts/VCR_OSD_MONO_2.png', 'assets/fonts/VCR_OSD_MONO.xml');
+    game.load.bitmapFont('mecha_green', 'assets/fonts/mecha/mecha_green.png', 'assets/fonts/mecha/mecha.xml');
+    game.load.bitmapFont('mecha_blue', 'assets/fonts/mecha/mecha_blue.png', 'assets/fonts/mecha/mecha.xml');
+    game.load.bitmapFont('mecha_pink', 'assets/fonts/mecha/mecha_pink.png', 'assets/fonts/mecha/mecha.xml');
 
 }
 
@@ -133,10 +135,11 @@ function create() {
     scorePlayer2 = 0
 
     // display scores
-    // bmpTextScorePlayer1 = game.add.bitmapText(50, 50, 'VCR_OSD_MONO', '' + scorePlayer1, 512)
-    // bmpTextScorePlayer1.alpha = 0.2
+    bmpTextScorePlayer1 = game.add.bitmapText(100, 125, 'mecha_blue', '' + scorePlayer1, 500)
+    bmpTextScorePlayer1.alpha = 0.1
 
-    // bmpTextScorePlayer2 = game.add.bitmapText(500, 500, 'VCR_OSD_MONO', '' + scorePlayer2, 32)
+    bmpTextScorePlayer2 = game.add.bitmapText(475, 125, 'mecha_pink', '' + scorePlayer2, 500)
+    bmpTextScorePlayer2.alpha = 0.15
 
     // create particle emitters for winning explosion
     player1WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 500)
@@ -240,10 +243,15 @@ function update() {
         launchBall()
         game.camera.shake(0.03, 1000)
         if(sideWalls.name === "left"){
+            scorePlayer2++
+            updateText(bmpTextScorePlayer2,scorePlayer2)
             emitWinParticles(player2WinEmitter)
         } else if (sideWalls.name === "right") {
+            scorePlayer1++
+            updateText(bmpTextScorePlayer1,scorePlayer1)
             emitWinParticles(player1WinEmitter)
         }
+        checkScore()
     })
 
     // collision with paddles
@@ -269,6 +277,35 @@ function update() {
 
     traceEmitter.x = ball.body.x + 0.5 * ball.width
     traceEmitter.y = ball.body.y + 0.5 * ball.height
+}
+
+function checkScore() {
+    if(scorePlayer1 === 10 || scorePlayer2 === 10) {
+        scorePlayer1 = 0
+        scorePlayer2 = 0
+        updateText(bmpTextScorePlayer1,scorePlayer1)
+        updateText(bmpTextScorePlayer2,scorePlayer2)
+    }
+}
+
+function updateText(textObject,newText) {
+    textObject.setText(newText)
+
+    const newAlpha = 1
+    const oldAlpha = textObject.alpha
+    
+    // configure tween
+    const easing = Phaser.Easing.Exponential.In
+    const autoStart = false
+    const delay = 0
+    const repeat = 0
+    const yoyo = false
+
+    // tween (fast) to new alpha and (slow) back to old one
+    game.add.tween(textObject)
+    .to( { alpha: newAlpha }, 1, easing, autoStart, delay, repeat, yoyo)
+    .to( { alpha: oldAlpha }, 1000, easing, autoStart, delay, repeat, yoyo)
+    .start()
 }
 
 function emitBounceParticles(emitter) {
