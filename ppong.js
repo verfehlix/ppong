@@ -301,7 +301,7 @@ function update() {
     controlPaddle(paddle1, game.input.y)
 
     // handle second (CPU) paddle movement --> perfect enemy, always hits the ball
-    // controlPaddle(paddle2, ball.y)
+    controlPaddle(paddle2, ball.y)
 
     // Ball Collision Detection
     
