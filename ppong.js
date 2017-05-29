@@ -20,7 +20,7 @@ let ballVelocity = 400
 let wallBounceEmitter
 let player1BounceEmitter
 let player2BounceEmitter
-let traceEmitter
+let ballTraceEmitter
 
 let player1WinEmitter
 let player2WinEmitter
@@ -31,6 +31,7 @@ let scorePlayer2
 let scoreTextPlayer1
 let scoreTextPlayer2
 
+let goalTextBackgroundBox
 let goalTextPlayer1
 let goalTextPlayer2
 
@@ -179,7 +180,6 @@ function create() {
     player1WinEmitter.setYSpeed(-1000,1000)
     layerGameObjects.add(player1WinEmitter)
 
-
     player2WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 500)
     player2WinEmitter.makeParticles(['particle1_pink','particle2_pink','particle3_pink'])
     player2WinEmitter.setScale(10, 0, 10, 0, 2000)
@@ -205,7 +205,28 @@ function create() {
     layerGameObjects.add(paddles)
 
     paddle1 = createPaddle(55,game.world.centerY,paddles,"player1")
+
+    paddle1TraceEmitter = game.add.emitter(-1000,-1000,500)
+    paddle1TraceEmitter.makeParticles('paddle_blue')
+    paddle1TraceEmitter.setScale(1, 0.5, 1, 0.5, 500)
+    paddle1TraceEmitter.setAlpha(0.1, 0, 500)
+    paddle1TraceEmitter.setXSpeed(0,0)
+    paddle1TraceEmitter.setYSpeed(0,0)
+    paddle1TraceEmitter.gravity = 0
+    paddle1TraceEmitter.setRotation(0,0)
+    layerGameObjects.add(paddle1TraceEmitter)
+
     paddle2 = createPaddle(game.world.width - 55,game.world.centerY,paddles,"player2")
+
+    paddle2TraceEmitter = game.add.emitter(-1000,-1000,500)
+    paddle2TraceEmitter.makeParticles('paddle_pink')
+    paddle2TraceEmitter.setScale(1, 0.5, 1, 0.5, 500)
+    paddle2TraceEmitter.setAlpha(0.1, 0, 500)
+    paddle2TraceEmitter.setXSpeed(0,0)
+    paddle2TraceEmitter.setYSpeed(0,0)
+    paddle2TraceEmitter.gravity = 0
+    paddle2TraceEmitter.setRotation(0,0)
+    layerGameObjects.add(paddle2TraceEmitter)
 
     // create ball
     ball = createBall(game.world.centerX, game.world.centerY)
@@ -234,21 +255,33 @@ function create() {
     player2BounceEmitter.setYSpeed(-500,500)
     layerGameObjects.add(player2BounceEmitter)
 
-    traceEmitter = game.add.emitter(-1000,-1000,500)
-    traceEmitter.makeParticles('trace')
-    traceEmitter.setScale(1, 0.5, 1, 0.5, 500)
-    traceEmitter.setAlpha(0.5, 0, 500)
-    traceEmitter.setXSpeed(0,0)
-    traceEmitter.setYSpeed(0,0)
-    traceEmitter.gravity = 0
-    layerGameObjects.add(traceEmitter)
+    ballTraceEmitter = game.add.emitter(-1000,-1000,500)
+    ballTraceEmitter.makeParticles('trace')
+    ballTraceEmitter.setScale(1, 0.5, 1, 0.5, 500)
+    ballTraceEmitter.setAlpha(0.5, 0, 500)
+    ballTraceEmitter.setXSpeed(0,0)
+    ballTraceEmitter.setYSpeed(0,0)
+    ballTraceEmitter.gravity = 0
+    layerGameObjects.add(ballTraceEmitter)
 
     // pre-emit all emitters off screen to prevent initial fps drop on first emit
     emitBounceParticles(wallBounceEmitter)
     emitBounceParticles(player1BounceEmitter)
     emitBounceParticles(player2BounceEmitter)
 
+    // start emitting the paddle trace emitters
+    emitTraceParticles(paddle1TraceEmitter)
+    emitTraceParticles(paddle2TraceEmitter)
+
     // set up goal texts
+    goalTextBackgroundBox = game.add.sprite(game.world.width / 2, game.world.height / 2, 'wall')
+    goalTextBackgroundBox.anchor.set(0.5,0.6)
+    goalTextBackgroundBox.width = game.world.width
+    goalTextBackgroundBox.height = 150
+    goalTextBackgroundBox.alpha = 0
+    goalTextBackgroundBox.tint = 0x000000
+    layerText.add(goalTextBackgroundBox)
+
     goalTextPlayer1 = game.add.bitmapText(game.world.width / 2, game.world.height / 2, 'mecha_blue', 'GOAL!', 135)
     goalTextPlayer1.anchor.set(0.5,0.5)
     goalTextPlayer1.alpha = 0
@@ -268,7 +301,7 @@ function update() {
     controlPaddle(paddle1, game.input.y)
 
     // handle second (CPU) paddle movement --> perfect enemy, always hits the ball
-    controlPaddle(paddle2, ball.y)
+    // controlPaddle(paddle2, ball.y)
 
     // Ball Collision Detection
     
@@ -292,7 +325,7 @@ function update() {
         launchBall()
         
         game.camera.shake(0.03, 1000)
-        
+
         if(sideWalls.name === "left"){
             scorePlayer2++
             updateText(scoreTextPlayer2,scorePlayer2)
@@ -304,17 +337,63 @@ function update() {
             const delay = 0
             const repeat = 0
             const yoyo = false
+        
+            let boxTween = game.add.tween(goalTextBackgroundBox)
+            .to( { alpha: 0.5 }, 1, easing, autoStart, delay, repeat, yoyo)
+            .to( { alpha: 0, x: game.world.width * 1.5 }, 1500, easing, autoStart, delay, repeat, yoyo)
+            
+            boxTween.onComplete.add(function(){
+                goalTextBackgroundBox.x = game.world.width / 2
+            },this)
+            
+            
+            boxTween.start()
 
-            game.add.tween(goalTextPlayer2)
+            let tween = game.add.tween(goalTextPlayer2)
             .to( { alpha: 1 }, 1, easing, autoStart, delay, repeat, yoyo)
-            .to( { alpha: 0 }, 1500, easing, autoStart, delay, repeat, yoyo)
+            .to( { alpha: 0, x: game.world.width * 1.5  }, 1500, easing, autoStart, delay, repeat, yoyo)
             .start()
+
+            tween.onComplete.add(function(){
+                goalTextPlayer2.x = game.world.width / 2
+            },this)
+        
+            tween.start()
 
         } else if (sideWalls.name === "right") {
             scorePlayer1++
             updateText(scoreTextPlayer1,scorePlayer1)
             emitWinParticles(player1WinEmitter)
-            goalTextPlayer1.visible = true
+
+            // configure tween
+            const easing = Phaser.Easing.Exponential.In
+            const autoStart = false
+            const delay = 0
+            const repeat = 0
+            const yoyo = false
+
+            let boxTween = game.add.tween(goalTextBackgroundBox)
+            .to( { alpha: 0.5 }, 1, easing, autoStart, delay, repeat, yoyo)
+            .to( { alpha: 0, x: - game.world.width * 1.5 }, 1500, easing, autoStart, delay, repeat, yoyo)
+            
+            boxTween.onComplete.add(function(){
+                goalTextBackgroundBox.x = game.world.width / 2
+            },this)
+            
+            
+            boxTween.start()
+
+            let tween = game.add.tween(goalTextPlayer1)
+            .to( { alpha: 1 }, 1, easing, autoStart, delay, repeat, yoyo)
+            .to( { alpha: 0, x: -game.world.width * 1.5  }, 1500, easing, autoStart, delay, repeat, yoyo)
+            .start()
+
+            tween.onComplete.add(function(){
+                goalTextPlayer1.x = game.world.width / 2
+            },this)
+        
+            tween.start()
+
         }
 
         checkScore()
@@ -331,6 +410,13 @@ function update() {
         }
     })
 
+    // Update Paddle Emitters
+    paddle1TraceEmitter.x = paddle1.x
+    paddle1TraceEmitter.y = paddle1.y
+
+    paddle2TraceEmitter.x = paddle2.x
+    paddle2TraceEmitter.y = paddle2.y
+
     // Update Ball Emitters
     wallBounceEmitter.x = ball.body.x
     wallBounceEmitter.y = ball.body.y
@@ -341,8 +427,8 @@ function update() {
     player2BounceEmitter.x = ball.body.x
     player2BounceEmitter.y = ball.body.y
 
-    traceEmitter.x = ball.body.x + 0.5 * ball.width
-    traceEmitter.y = ball.body.y + 0.5 * ball.height
+    ballTraceEmitter.x = ball.body.x + 0.5 * ball.width
+    ballTraceEmitter.y = ball.body.y + 0.5 * ball.height
 }
 
 function checkScore() {
@@ -385,7 +471,7 @@ function emitBounceParticles(emitter) {
 function emitTraceParticles(emitter) {
     const explode = false
     const lifeSpan = 500
-    const particlesPerFrame = 2
+    const particlesPerFrame = 1
 
     emitter.start(explode, lifeSpan, particlesPerFrame)
 }
@@ -469,7 +555,6 @@ function createBall(x,y) {
 function launchBall() {
     if(ballLaunched){
         ball.kill()
-
         ball = createBall(game.world.width / 2, game.world.height / 2)
         layerGameObjects.add(ball)
 
@@ -499,7 +584,9 @@ function launchBall() {
         ball.body.velocity.x = factor1 * game.rnd.integerInRange(450, 500)
         ball.body.velocity.y = factor2 * game.rnd.integerInRange(450, 500)
 
-        emitTraceParticles(traceEmitter)
+        emitTraceParticles(ballTraceEmitter)
+        ballTraceEmitter.on = true
+
 
         ballLaunched = true
     }
