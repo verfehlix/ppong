@@ -11,7 +11,6 @@ class Paddle extends Phaser.Sprite {
         }
         this.anchor.setTo(0.5,0.5)
 
-
         // set the physics properties
         game.physics.arcade.enable(this)
         this.body.collideWorldBounds = true

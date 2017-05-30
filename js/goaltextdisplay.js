@@ -19,63 +19,25 @@ class GoalTextDisplay {
         this.goalTextPlayer2.anchor.set(0.5,0.5)
         this.goalTextPlayer2.alpha = 0
         layerText.add(this.goalTextPlayer2)
-    }
 
-    updateScorePlayer1() {
-        // increment score & display it
-        this.scorePlayer1++
-        this.scoreTextPlayer1.setText(this.scorePlayer1)
-
-        this.flashScore(this.scoreTextPlayer1)
-        this.checkScore()
-    }
-
-     updateScorePlayer2() {
-        // increment score & display it
-        this.scorePlayer2++
-        this.scoreTextPlayer2.setText(this.scorePlayer2)
-
-        this.flashScore(this.scoreTextPlayer2)
-        this.checkScore()
-    }
-
-    flashScore(scoreTextObject) {
-        const newAlpha = 1
-        const oldAlpha = scoreTextObject.alpha
-        
-        const easing = Phaser.Easing.Exponential.In
-        const autoStart = false
-        const delay = 0
-        const repeat = 0
-        const yoyo = false
-
-        // tween (fast) to new alpha and (slow) back to old one
-        game.add.tween(scoreTextObject)
-        .to( { alpha: newAlpha }, 1, easing, autoStart, delay, repeat, yoyo)
-        .to( { alpha: oldAlpha }, 1000, easing, autoStart, delay, repeat, yoyo)
-        .start()
-
-    }
-
-    checkScore() {
-        if(this.scorePlayer1 === 10 || this.scorePlayer2 === 10) {
-            this.scorePlayer1 = -1
-            this.scorePlayer2 = -1
-            this.updateScorePlayer1()
-            this.updateScorePlayer2()
-        }
+        // setup explosion emitters
+        this.player1GoalEmitter = new GoalEmitter(game, layerGameObjects, ['particle1_blue','particle2_blue','particle3_blue'])
+        this.player2GoalEmitter = new GoalEmitter(game, layerGameObjects, ['particle1_pink','particle2_pink','particle3_pink'])
     }
 
     show(goal) {
         let factor
         let goalText
+        let emitter
 
         if(goal === "left") {
             factor = 1
             goalText = this.goalTextPlayer2
+            emitter = this.player2GoalEmitter
         } else if(goal === "right") {
             factor = -1
             goalText = this.goalTextPlayer1
+            emitter = this.player1GoalEmitter
         }
 
         // tween parameters
@@ -108,6 +70,8 @@ class GoalTextDisplay {
     
         boxTween.start()
         tween.start()
+
+        emitter.fire()
     }
     
 }

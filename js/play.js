@@ -12,24 +12,11 @@ let playState = {
         // create scoreboard
         scoreBoard = new ScoreBoad(game)
 
-        // set up goal texts
+        // create goal text popups
         goalTextDisplay = new GoalTextDisplay(game)
 
-        // create particle emitters for winning explosion
-        player1GoalEmitter = new GoalEmitter(game, layerGameObjects, ['particle1_blue','particle2_blue','particle3_blue'])
-        player2GoalEmitter = new GoalEmitter(game, layerGameObjects, ['particle1_pink','particle2_pink','particle3_pink'])
-
         // create walls
-        topBottomWalls = this.createCollisionGroup()
-        sideWalls = this.createCollisionGroup()
-        layerGameObjects.add(topBottomWalls)
-        layerGameObjects.add(sideWalls)
-
-        new Wall(game, 0, -25, topBottomWalls, 800, 25, "top")
-        new Wall(game, 0, 600, topBottomWalls, 800, 25, "bottom")
-        
-        new Wall(game, -25, 0, sideWalls, 25, 600, "left")
-        new Wall(game, 800, 0, sideWalls, 25, 600, "right")
+        this.setupWalls()
 
         // create paddles
         paddles = this.createCollisionGroup()
@@ -63,6 +50,19 @@ let playState = {
         game.physics.arcade.collide(ball, paddles, function(ball, paddles){
             ball.handlePaddleCollision(paddles.name)
         })
+    },
+
+    setupWalls: function() {
+        topBottomWalls = this.createCollisionGroup()
+        sideWalls = this.createCollisionGroup()
+        layerGameObjects.add(topBottomWalls)
+        layerGameObjects.add(sideWalls)
+
+        new Wall(game, 0, -25, topBottomWalls, 800, 25, "top")
+        new Wall(game, 0, 600, topBottomWalls, 800, 25, "bottom")
+        
+        new Wall(game, -25, 0, sideWalls, 25, 600, "left")
+        new Wall(game, 800, 0, sideWalls, 25, 600, "right")
     },
 
     createCollisionGroup: function() {

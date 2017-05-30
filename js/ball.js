@@ -40,18 +40,18 @@ class Ball extends Phaser.Sprite {
     handleGoalCollision(goalName) {
         ball.launch()
         game.camera.shake(0.03, 1000)
+        goalTextDisplay.show(goalName)
+        
         if(goalName === "left"){
             scoreBoard.updateScorePlayer2()
-            player2GoalEmitter.fire()
         } else if (goalName === "right") {
             scoreBoard.updateScorePlayer1()
-            player1GoalEmitter.fire()
         }
-        goalTextDisplay.show(goalName)
     }
 
     handlePaddleCollision(paddleName) {
         game.camera.shake(0.01, 100)
+        
         if(paddleName === "player1"){
             this.player1BounceEmitter.fire()
         } else if (paddleName === "player2") {
@@ -60,13 +60,9 @@ class Ball extends Phaser.Sprite {
     }
 
     launch() {
-
         if(this.isLaunched){
-            
             this.reset()
-
         } else {
-
             let plusMinus1 = game.rnd.integerInRange(0,1)
             let plusMinus2 = game.rnd.integerInRange(0,1)
 
@@ -88,16 +84,11 @@ class Ball extends Phaser.Sprite {
             ball.body.velocity.x = factor1 * game.rnd.integerInRange(450, 500)
             ball.body.velocity.y = factor2 * game.rnd.integerInRange(450, 500)
 
-            // this.emitTraceParticles(ballTraceEmitter)
-            // ballTraceEmitter.on = true
-
-
             this.isLaunched = true
         }
     }
 
     reset() {
-        
         this.kill()
         this.wallBounceEmitter.kill()
         this.player1BounceEmitter.kill()
