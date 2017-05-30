@@ -103,21 +103,8 @@ let playState = {
         layerBackground.add(scoreTextPlayer2)
 
         // create particle emitters for winning explosion
-        player1WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 500)
-        player1WinEmitter.makeParticles(['particle1_blue','particle2_blue','particle3_blue'])
-        player1WinEmitter.setScale(10, 0, 10, 0, 2000)
-        player1WinEmitter.setAlpha(1, 0, 2000)
-        player1WinEmitter.setXSpeed(-1000,1000)
-        player1WinEmitter.setYSpeed(-1000,1000)
-        layerGameObjects.add(player1WinEmitter)
-
-        player2WinEmitter = game.add.emitter(game.world.centerX, game.world.centerY, 500)
-        player2WinEmitter.makeParticles(['particle1_pink','particle2_pink','particle3_pink'])
-        player2WinEmitter.setScale(10, 0, 10, 0, 2000)
-        player2WinEmitter.setAlpha(1, 0, 2000)
-        player2WinEmitter.setXSpeed(-1000,1000)
-        player2WinEmitter.setYSpeed(-1000,1000)
-        layerGameObjects.add(player2WinEmitter)
+        player1GoalEmitter = new GoalEmitter(game, layerGameObjects, ['particle1_blue','particle2_blue','particle3_blue'])
+        player2GoalEmitter = new GoalEmitter(game, layerGameObjects, ['particle1_pink','particle2_pink','particle3_pink'])
 
         // create walls
         topBottomWalls = this.createCollisionGroup()
@@ -138,71 +125,33 @@ let playState = {
         paddle1 = this.createPaddle(55,game.world.centerY,paddles,"player1")
 
         paddle1TraceEmitter = game.add.emitter(-1000,-1000,500)
-        paddle1TraceEmitter.makeParticles('paddle_blue')
-        paddle1TraceEmitter.setScale(1, 0.5, 1, 0.5, 500)
-        paddle1TraceEmitter.setAlpha(0.1, 0, 500)
-        paddle1TraceEmitter.setXSpeed(0,0)
-        paddle1TraceEmitter.setYSpeed(0,0)
-        paddle1TraceEmitter.gravity = 0
-        paddle1TraceEmitter.setRotation(0,0)
-        layerGameObjects.add(paddle1TraceEmitter)
+
+        paddle1TraceEmitter = new TraceEmitter(game, layerGameObjects, 'paddle_blue', 0.1)
 
         paddle2 = this.createPaddle(game.world.width - 55,game.world.centerY,paddles,"player2")
 
-        paddle2TraceEmitter = game.add.emitter(-1000,-1000,500)
-        paddle2TraceEmitter.makeParticles('paddle_pink')
-        paddle2TraceEmitter.setScale(1, 0.5, 1, 0.5, 500)
-        paddle2TraceEmitter.setAlpha(0.1, 0, 500)
-        paddle2TraceEmitter.setXSpeed(0,0)
-        paddle2TraceEmitter.setYSpeed(0,0)
-        paddle2TraceEmitter.gravity = 0
-        paddle2TraceEmitter.setRotation(0,0)
-        layerGameObjects.add(paddle2TraceEmitter)
+        paddle2TraceEmitter = new TraceEmitter(game, layerGameObjects, 'paddle_pink', 0.1)
 
         // create ball
-        ball = this.createBall(game.world.centerX, game.world.centerY)
+        // ball = this.createBall(game.world.centerX, game.world.centerY)
+        ball = new Ball(game, game.world.centerX, game.world.centerY)
         layerGameObjects.add(ball)
 
         // create emitters for the ball
-        wallBounceEmitter = game.add.emitter(-1000, -1000, 500)
-        wallBounceEmitter.makeParticles(['particle1_green','particle2_green','particle3_green'])
-        wallBounceEmitter.setScale(2, 0, 2, 0, 1000)
-        wallBounceEmitter.setAlpha(1, 0, 1000)
-        layerGameObjects.add(wallBounceEmitter)
-        
-        player1BounceEmitter = game.add.emitter(-1000, -1000, 500)
-        player1BounceEmitter.makeParticles(['particle1_blue','particle2_blue','particle3_blue'])
-        player1BounceEmitter.setScale(1, 0, 1, 0, 1000)
-        player1BounceEmitter.setAlpha(1, 0, 2000)
-        player1BounceEmitter.setXSpeed(0,200)
-        player1BounceEmitter.setYSpeed(-500,500)
-        layerGameObjects.add(player1BounceEmitter)
+        wallBounceEmitter = new BounceEmitter(game, layerGameObjects, ['particle1_green','particle2_green','particle3_green'])
+        player1BounceEmitter  = new BounceEmitter(game, layerGameObjects, ['particle1_blue','particle2_blue','particle3_blue'])
+        player2BounceEmitter  = new BounceEmitter(game, layerGameObjects, ['particle1_pink','particle2_pink','particle3_pink'])
 
-        player2BounceEmitter = game.add.emitter(-1000, -1000, 500)
-        player2BounceEmitter.makeParticles(['particle1_pink','particle2_pink','particle3_pink'])
-        player2BounceEmitter.setScale(1, 0, 1, 0, 1000)
-        player2BounceEmitter.setAlpha(1, 0, 2000)
-        player2BounceEmitter.setXSpeed(-200,0)
-        player2BounceEmitter.setYSpeed(-500,500)
-        layerGameObjects.add(player2BounceEmitter)
-
-        ballTraceEmitter = game.add.emitter(-1000,-1000,500)
-        ballTraceEmitter.makeParticles('trace')
-        ballTraceEmitter.setScale(1, 0.5, 1, 0.5, 500)
-        ballTraceEmitter.setAlpha(0.5, 0, 500)
-        ballTraceEmitter.setXSpeed(0,0)
-        ballTraceEmitter.setYSpeed(0,0)
-        ballTraceEmitter.gravity = 0
-        layerGameObjects.add(ballTraceEmitter)
+        ballTraceEmitter = new TraceEmitter(game, layerGameObjects, 'trace', 0.5)
 
         // pre-emit all emitters off screen to prevent initial fps drop on first emit
-        this.emitBounceParticles(wallBounceEmitter)
-        this.emitBounceParticles(player1BounceEmitter)
-        this.emitBounceParticles(player2BounceEmitter)
+        // this.emitBounceParticles(wallBounceEmitter)        
+        // this.emitBounceParticles(player1BounceEmitter)
+        // this.emitBounceParticles(player2BounceEmitter)
 
         // start emitting the paddle trace emitters
-        this.emitTraceParticles(paddle1TraceEmitter)
-        this.emitTraceParticles(paddle2TraceEmitter)
+        // this.emitTraceParticles(paddle1TraceEmitter)
+        // this.emitTraceParticles(paddle2TraceEmitter)
 
         // set up goal texts
         goalTextBackgroundBox = game.add.sprite(game.world.width / 2, game.world.height / 2, 'wall')
@@ -224,7 +173,9 @@ let playState = {
         layerText.add(goalTextPlayer2)
 
         // add left-mouseklick event handler for input handling
-        game.input.onDown.add(this.launchBall, this)
+        game.input.onDown.add(function(){
+            ball.launch()
+        }, this)
     },
 
     update: function() {
@@ -234,7 +185,7 @@ let playState = {
         this.controlPaddle(paddle1, game.input.y)
 
         // handle second (CPU) paddle movement --> perfect enemy, always hits the ball
-        this.controlPaddle(paddle2, ball.y)
+        // this.controlPaddle(paddle2, ball.y)
 
         // Ball Collision Detection
         
@@ -242,27 +193,21 @@ let playState = {
         game.physics.arcade.collide(ball, topBottomWalls, function(ball, topBottomWalls){
             game.camera.shake(0.01, 100)
             
-            if(topBottomWalls.name === "top"){
-                wallBounceEmitter.setXSpeed(-500,500)
-                wallBounceEmitter.setYSpeed(0,200)
-            } else if (topBottomWalls.name === "bottom") {
-                wallBounceEmitter.setXSpeed(-500,500)            
-                wallBounceEmitter.setYSpeed(-200,0)
-            }
+            wallBounceEmitter.updateFireDirection(topBottomWalls.name)
+            wallBounceEmitter.fire()
 
-            that.emitBounceParticles(wallBounceEmitter)
         })
 
         // collision with goals
         game.physics.arcade.collide(ball, sideWalls, function(ball, sideWalls){
-            that.launchBall()
+            ball.launch()
             
             game.camera.shake(0.03, 1000)
 
             if(sideWalls.name === "left"){
                 scorePlayer2++
                 that.updateText(scoreTextPlayer2,scorePlayer2)
-                that.emitWinParticles(player2WinEmitter)
+                player2GoalEmitter.fire()
 
                 // configure tween
                 const easing = Phaser.Easing.Exponential.In
@@ -294,8 +239,8 @@ let playState = {
 
             } else if (sideWalls.name === "right") {
                 scorePlayer1++
-                this.updateText(scoreTextPlayer1,scorePlayer1)
-                this.emitWinParticles(player1WinEmitter)
+                that.updateText(scoreTextPlayer1,scorePlayer1)
+                player1GoalEmitter.fire()
 
                 // configure tween
                 const easing = Phaser.Easing.Exponential.In
@@ -336,31 +281,22 @@ let playState = {
             game.camera.shake(0.01, 100)
             
             if(paddles.name === "player1"){
-                that.emitBounceParticles(player1BounceEmitter)
+                player1BounceEmitter.fire()
             } else if (paddles.name === "player2") {
-                that.emitBounceParticles(player2BounceEmitter)
+                player2BounceEmitter.fire()
             }
         })
 
         // Update Paddle Emitters
-        paddle1TraceEmitter.x = paddle1.x
-        paddle1TraceEmitter.y = paddle1.y
-
-        paddle2TraceEmitter.x = paddle2.x
-        paddle2TraceEmitter.y = paddle2.y
+        paddle1TraceEmitter.updatePosition(paddle1.x, paddle1.y)
+        paddle2TraceEmitter.updatePosition(paddle2.x, paddle2.y)
 
         // Update Ball Emitters
-        wallBounceEmitter.x = ball.body.x
-        wallBounceEmitter.y = ball.body.y
+        wallBounceEmitter.updatePosition(ball.body.x,ball.body.y)
+        player1BounceEmitter.updatePosition(ball.body.x,ball.body.y)
+        player2BounceEmitter.updatePosition(ball.body.x,ball.body.y)
 
-        player1BounceEmitter.x = ball.body.x
-        player1BounceEmitter.y = ball.body.y
-
-        player2BounceEmitter.x = ball.body.x
-        player2BounceEmitter.y = ball.body.y
-
-        ballTraceEmitter.x = ball.body.x + 0.5 * ball.width
-        ballTraceEmitter.y = ball.body.y + 0.5 * ball.height
+        ballTraceEmitter.updatePosition(ball.body.x + 0.5 * ball.width,ball.body.y + 0.5 * ball.height)
     },
 
     checkScore: function() {
@@ -469,60 +405,6 @@ let playState = {
             paddle.y = paddle.height / 2
         } else if (paddle.y > game.world.height - paddle.height / 2) {
             paddle.y = game.world.height - paddle.height / 2
-        }
-    },
-
-    createBall: function(x,y) {
-        let ball = game.add.sprite(x,y,"ball")
-        
-        ball.anchor.setTo(0.5,0.5)
-        
-        game.physics.arcade.enable(ball)
-        
-        ball.body.bounce.setTo(1.05,1.05)
-
-        ball.smoothed = false
-
-        return ball
-    },
-
-    launchBall: function() {
-        if(ballLaunched){
-            ball.kill()
-            ball = this.createBall(game.world.width / 2, game.world.height / 2)
-            layerGameObjects.add(ball)
-
-            ballLaunched = false
-
-            paddle2.y = game.world.height / 2
-        } else {
-
-            let plusMinus1 = game.rnd.integerInRange(0,1)
-            let plusMinus2 = game.rnd.integerInRange(0,1)
-
-            let factor1
-            let factor2
-
-            if(plusMinus1 === 1){
-                factor1 = 1
-            } else {
-                factor1 = -1
-            }
-
-            if(plusMinus2 === 1){
-                factor2 = 1
-            } else {
-                factor2 = -1
-            }
-
-            ball.body.velocity.x = factor1 * game.rnd.integerInRange(450, 500)
-            ball.body.velocity.y = factor2 * game.rnd.integerInRange(450, 500)
-
-            this.emitTraceParticles(ballTraceEmitter)
-            ballTraceEmitter.on = true
-
-
-            ballLaunched = true
         }
     }
 }
