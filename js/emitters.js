@@ -103,3 +103,40 @@ class GoalEmitter {
         this.emitter.start(this.explode, this.lifeSpan, null, this.amount)
     }
 }
+
+/*
+==========================================================================================
+*/
+
+class WinEmitter {
+    constructor(game, x, y, minX, maxX, minY, maxY, particles) {
+        this.emitter = game.add.emitter(x,y,500)
+        this.emitter.makeParticles(particles)
+        this.emitter.setScale(2, 0, 2, 0, 2500)
+        this.emitter.setAlpha(1, 0, 2500)
+        this.emitter.setXSpeed(minX,maxX)
+        this.emitter.setYSpeed(minY,maxY)
+        // this.emitter.setRotation(0,0)
+        // this.emitter.gravity = 0
+
+        this.explode = false
+        this.lifeSpan = 2500
+        this.particlesPerFrame = 1
+        
+        // start firing / tracing
+        this.fire()
+    }
+
+    updatePosition(x,y) {
+        this.emitter.x = x
+        this.emitter.y = y
+    }
+
+    fire() {
+        this.emitter.start(this.explode, this.lifeSpan, this.particlesPerFrame)
+    }
+    
+    kill() {
+        this.emitter.destroy()
+    }
+}

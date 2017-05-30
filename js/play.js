@@ -1,6 +1,10 @@
 let playState = {
     
     create: function() {
+        // remove cursor
+        let canvas = document.querySelectorAll("canvas")[0]
+        canvas.classList.remove("showCursor")
+
         // create groups for layering sprites
         layerBackground = game.add.group();
         layerGameObjects = game.add.group();

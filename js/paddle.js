@@ -42,7 +42,7 @@ class Paddle extends Phaser.Sprite {
         } else if(this.name === "player2") {
             
             // perfect CPU movement --> cannot be beaten 
-            this.setY(ball.y)
+            // this.setY(ball.y)
         }
 
         // Update Paddle Trace Emitter

@@ -39,5 +39,6 @@ let loadState = {
 
         // transition to play state
         game.state.start("play")
+    
     }
 }

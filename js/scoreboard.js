@@ -1,14 +1,14 @@
 class ScoreBoad {
     constructor(game) {
-        // setup actual scores
-        this.scorePlayer1 = 0
-        this.scorePlayer2 = 0
+        // setup initial scores
+        this.scorePlayer1 = 9
+        this.scorePlayer2 = 9
 
         // setup texts displaying the scores
         this.scoreTextPlayer1 = game.add.bitmapText(100, 125, 'mecha_blue', '' + this.scorePlayer1, 500)
         this.scoreTextPlayer1.alpha = 0.1
 
-        this.scoreTextPlayer2 = game.add.bitmapText(475, 125, 'mecha_pink', '' + this.scorePlayer1, 500)
+        this.scoreTextPlayer2 = game.add.bitmapText(475, 125, 'mecha_pink', '' + this.scorePlayer2, 500)
         this.scoreTextPlayer2.alpha = 0.15
 
         layerBackground.add(this.scoreTextPlayer1)
@@ -52,11 +52,10 @@ class ScoreBoad {
     }
 
     checkScore() {
-        if(this.scorePlayer1 === 10 || this.scorePlayer2 === 10) {
-            this.scorePlayer1 = -1
-            this.scorePlayer2 = -1
-            this.updateScorePlayer1()
-            this.updateScorePlayer2()
+        if(this.scorePlayer1 === 10) {
+            game.state.start("win", false, false,"player1")
+        } else if(this.scorePlayer2 === 10) {
+            game.state.start("win", false, false,"player2")
         }
     }
     
