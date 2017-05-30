@@ -1,8 +1,8 @@
 class ScoreBoad {
     constructor(game) {
         // setup initial scores
-        this.scorePlayer1 = 9
-        this.scorePlayer2 = 9
+        this.scorePlayer1 = 0
+        this.scorePlayer2 = 0
 
         // setup texts displaying the scores
         this.scoreTextPlayer1 = game.add.bitmapText(100, 125, 'mecha_blue', '' + this.scorePlayer1, 500)

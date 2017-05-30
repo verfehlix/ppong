@@ -24,6 +24,19 @@ class Ball extends Phaser.Sprite {
     }
 
     update() {
+        // cap velocity
+        if(this.body.velocity.x > 0) {
+            this.body.velocity.x = Math.min(this.body.velocity.x, 1200)
+        } else {
+            this.body.velocity.x = Math.max(this.body.velocity.x, -1200)            
+        }
+
+        if(this.body.velocity.y > 0) {
+            this.body.velocity.y = Math.min(this.body.velocity.y, 1200)
+        } else {
+            this.body.velocity.y = Math.max(this.body.velocity.y, -1200)            
+        }
+
         // Update Ball Emitter Positions
         this.wallBounceEmitter.updatePosition(this.x,this.y)
         this.player1BounceEmitter.updatePosition(this.x,this.y)

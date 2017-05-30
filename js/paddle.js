@@ -19,6 +19,7 @@ class Paddle extends Phaser.Sprite {
         // set custom properties
         this.name = name
 
+        // add trace emitters
         if(name === "player1") {
             this.traceEmitter = new TraceEmitter(game, layerGameObjects, 'paddle_blue', 0.1)
         } else if (name === "player2") {
@@ -38,11 +39,12 @@ class Paddle extends Phaser.Sprite {
             
             // handle player movement via mouse
             this.setY(game.input.y)
+            // this.setY(ball.y)
 
         } else if(this.name === "player2") {
             
             // perfect CPU movement --> cannot be beaten 
-            // this.setY(ball.y)
+            this.setY(ball.y)
         }
 
         // Update Paddle Trace Emitter
