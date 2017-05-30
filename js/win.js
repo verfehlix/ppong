@@ -82,7 +82,7 @@ let winState = {
             rematchBoxTopLine.animations.play('lineMove', 100, true)
             rematchBoxBottomLine.animations.play('lineMove', 100, true)
             rematchBoxLeftLine.animations.play('lineMove', 100, true)
-            rematchBoxRightLine.animations.play('linelineMove', 100, true)
+            rematchBoxRightLine.animations.play('lineMove', 100, true)
         }, this);
         rematchBox.events.onInputOut.add(function(){
             rematchTween.pause()
@@ -109,14 +109,27 @@ let winState = {
         let rematchBoxLeftLine = game.add.tileSprite(game.world.width / 2 - 150, game.world.height / 2 + 92, 16, 75, 'line_green')
         rematchBoxLeftLine.anchor.setTo(0.5,0.5)
         rematchBoxLeftLine.alpha = 1
-        rematchBoxLeftLine.angle = 360
+        rematchBoxLeftLine.angle = 0
         rematchBoxLeftLine.animations.add('lineMove')
 
         let rematchBoxRightLine = game.add.tileSprite(game.world.width / 2 + 150, game.world.height / 2 + 92, 16, 75, 'line_green')
         rematchBoxRightLine.anchor.setTo(0.5,0.5)
         rematchBoxRightLine.alpha = 1
-        rematchBoxRightLine.angle = 0
+        rematchBoxRightLine.angle = 180
         rematchBoxRightLine.animations.add('lineMove')
+
+        // setup squares where lines meet
+        let rematchBoxSquareTopLeft = game.add.sprite(game.world.width / 2 - 150,game.world.height / 2 + 55,"square")
+        rematchBoxSquareTopLeft.anchor.setTo(0.5,0.5)
+
+        let rematchBoxSquareTopRight = game.add.sprite(game.world.width / 2 + 150,game.world.height / 2 + 55,"square")
+        rematchBoxSquareTopRight.anchor.setTo(0.5,0.5)
+
+        let rematchBoxSquareBottomLeft = game.add.sprite(game.world.width / 2 - 150,game.world.height / 2 + 130,"square")
+        rematchBoxSquareBottomLeft.anchor.setTo(0.5,0.5)
+
+        let rematchBoxSquareBottomRight = game.add.sprite(game.world.width / 2 + 150,game.world.height / 2 + 130,"square")
+        rematchBoxSquareBottomRight.anchor.setTo(0.5,0.5)
 
         // setup button for back-to-menu
         let menuText = game.add.bitmapText(game.world.width / 2, game.world.height / 2 + 200, "mecha_green", "MAIN MENU", 70)
@@ -144,7 +157,7 @@ let winState = {
             menuBoxTopLine.animations.play('lineMove', 100, true)
             menuBoxBottomLine.animations.play('lineMove', 100, true)
             menuBoxLeftLine.animations.play('lineMove', 100, true)
-            menuBoxRightLine.animations.play('linelineMove', 100, true)
+            menuBoxRightLine.animations.play('lineMove', 100, true)
         }, this);
         menuBox.events.onInputOut.add(function(){
             menuTween.pause()
@@ -170,14 +183,27 @@ let winState = {
         let menuBoxLeftLine = game.add.tileSprite(game.world.width / 2 - 150, game.world.height / 2 + 192, 16, 75, 'line_green')
         menuBoxLeftLine.anchor.setTo(0.5,0.5)
         menuBoxLeftLine.alpha = 1
-        menuBoxLeftLine.angle = 360
+        menuBoxLeftLine.angle = 0
         menuBoxLeftLine.animations.add('lineMove')
 
         let menuBoxRightLine = game.add.tileSprite(game.world.width / 2 + 150, game.world.height / 2 + 192, 16, 75, 'line_green')
         menuBoxRightLine.anchor.setTo(0.5,0.5)
         menuBoxRightLine.alpha = 1
-        menuBoxRightLine.angle = 0
+        menuBoxRightLine.angle = 180
         menuBoxRightLine.animations.add('lineMove')
+
+        // setup squares where lines meet
+        let menuBoxSquareTopLeft = game.add.sprite(game.world.width / 2 - 150,game.world.height / 2 + 155,"square")
+        menuBoxSquareTopLeft.anchor.setTo(0.5,0.5)
+
+        let menuBoxSquareTopRight = game.add.sprite(game.world.width / 2 + 150,game.world.height / 2 + 155,"square")
+        menuBoxSquareTopRight.anchor.setTo(0.5,0.5)
+
+        let menuBoxSquareBottomLeft = game.add.sprite(game.world.width / 2 - 150,game.world.height / 2 + 230,"square")
+        menuBoxSquareBottomLeft.anchor.setTo(0.5,0.5)
+
+        let menuBoxSquareBottomRight = game.add.sprite(game.world.width / 2 + 150,game.world.height / 2 + 230,"square")
+        menuBoxSquareBottomRight.anchor.setTo(0.5,0.5)
 
         // show mouse cursor
         let canvas = document.querySelectorAll("canvas")[0]
