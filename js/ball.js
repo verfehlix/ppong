@@ -12,9 +12,51 @@ class Ball extends Phaser.Sprite {
 
         // set custom properties
         this.isLaunched = false
-        
+
+        // create particle emitters for the ball
+        this.wallBounceEmitter = new BounceEmitter(game, layerGameObjects, ['particle1_green','particle2_green','particle3_green'])
+        this.player1BounceEmitter  = new BounceEmitter(game, layerGameObjects, ['particle1_blue','particle2_blue','particle3_blue'])
+        this.player2BounceEmitter  = new BounceEmitter(game, layerGameObjects, ['particle1_pink','particle2_pink','particle3_pink'])
+        this.ballTraceEmitter = new TraceEmitter(game, layerGameObjects, 'trace', 0.5)
+
         // add it to the game
         game.add.existing(this)
+    }
+
+    update() {
+        // Update Ball Emitter Positions
+        this.wallBounceEmitter.updatePosition(this.x,this.y)
+        this.player1BounceEmitter.updatePosition(this.x,this.y)
+        this.player2BounceEmitter.updatePosition(this.x,this.y)
+        this.ballTraceEmitter.updatePosition(this.x,this.y) 
+    }
+
+    handleWallCollision(wallName) {
+        game.camera.shake(0.01, 100)
+        this.wallBounceEmitter.updateFireDirection(wallName)
+        this.wallBounceEmitter.fire()
+    }
+
+    handleGoalCollision(goalName) {
+        ball.launch()
+        game.camera.shake(0.03, 1000)
+        if(goalName === "left"){
+            scoreBoard.updateScorePlayer2()
+            player2GoalEmitter.fire()
+        } else if (goalName === "right") {
+            scoreBoard.updateScorePlayer1()
+            player1GoalEmitter.fire()
+        }
+        goalTextDisplay.show(goalName)
+    }
+
+    handlePaddleCollision(paddleName) {
+        game.camera.shake(0.01, 100)
+        if(paddleName === "player1"){
+            this.player1BounceEmitter.fire()
+        } else if (paddleName === "player2") {
+            this.player2BounceEmitter.fire()
+        }
     }
 
     launch() {
@@ -55,13 +97,16 @@ class Ball extends Phaser.Sprite {
     }
 
     reset() {
-       this.kill()
-
+        
+        this.kill()
+        this.wallBounceEmitter.kill()
+        this.player1BounceEmitter.kill()
+        this.player2BounceEmitter.kill()
+        this.ballTraceEmitter.kill()
+        
         ball = new Ball(game, game.world.centerX, game.world.centerY)
         layerGameObjects.add(ball)
 
         this.isLaunched = false
-
-        // paddle2.y = game.world.height / 2
     }
 }

@@ -33,6 +33,10 @@ class BounceEmitter {
     fire() {
         this.emitter.start(this.explode, this.lifeSpan, null, this.amount)
     }
+   
+    kill() {
+        this.emitter.destroy()
+    }
 }
 
 /*
@@ -67,6 +71,10 @@ class TraceEmitter {
 
     fire() {
         this.emitter.start(this.explode, this.lifeSpan, this.particlesPerFrame)
+    }
+    
+    kill() {
+        this.emitter.destroy()
     }
 }
 

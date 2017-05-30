@@ -27,6 +27,8 @@ let player2WinEmitter
 
 let scoreBoard
 
+let goalTextDisplay
+
 let goalTextBackgroundBox
 let goalTextPlayer1
 let goalTextPlayer2

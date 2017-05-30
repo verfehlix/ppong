@@ -1,4 +1,4 @@
-function setUpBackground() {
+function setupBackground() {
 
     // repeating background image
     let bg = game.add.tileSprite(-100, -100, 1000, 800, "bg")
