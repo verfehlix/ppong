@@ -25,11 +25,7 @@ let ballTraceEmitter
 let player1WinEmitter
 let player2WinEmitter
 
-let scorePlayer1
-let scorePlayer2
-
-let scoreTextPlayer1
-let scoreTextPlayer2
+let scoreBoard
 
 let goalTextBackgroundBox
 let goalTextPlayer1

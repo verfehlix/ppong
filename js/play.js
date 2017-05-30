@@ -6,101 +6,11 @@ let playState = {
         layerGameObjects = game.add.group();
         layerText = game.add.group();
         
-        // create background stuff
-        let bg = game.add.tileSprite(-100, -100, 1000, 800, "bg")
-        bg.alpha = 0.4
-        layerBackground.add(bg)
+        // create Background Decorations
+        setUpBackground()
 
-        let midLine1 = game.add.tileSprite(game.world.width / 2, game.world.height / 4, 16, 268, 'line_green')
-        midLine1.anchor.setTo(0.5,0.5)
-        midLine1.alpha = 1
-        midLine1.animations.add('lineMove')
-        midLine1.animations.play('lineMove', 100, true)
-        layerBackground.add(midLine1)
-
-        let midLine2 = game.add.tileSprite(game.world.width / 2, game.world.height * 3/4, 16, 268, 'line_green')
-        midLine2.anchor.setTo(0.5,0.5)
-        midLine2.alpha = 1
-        midLine2.angle = 180
-        midLine2.animations.add('lineMove')
-        midLine2.animations.play('lineMove', 100, true)
-        layerBackground.add(midLine2)
-
-        let midPoint = game.add.sprite(game.world.width / 2, game.world.height / 2,"mid_point")
-        midPoint.anchor.setTo(0.5,0.5)
-        layerBackground.add(midPoint)
-
-        let leftLine = game.add.tileSprite(16, game.world.height / 2, 16, 568, 'line_blue')
-        leftLine.anchor.setTo(0.5,0.5)
-        leftLine.alpha = 1
-        leftLine.animations.add('lineMove')
-        leftLine.animations.play('lineMove', 100, true)
-        layerBackground.add(leftLine)
-
-        let rightLine = game.add.tileSprite(784, game.world.height / 2, 16, 568, 'line_pink')
-        rightLine.anchor.setTo(0.5,0.5)
-        rightLine.alpha = 1
-        rightLine.angle = 180
-        rightLine.animations.add('lineMove')
-        rightLine.animations.play('lineMove', 100, true)
-        layerBackground.add(rightLine)
-
-        let topLine = game.add.tileSprite(game.world.width / 2, 16, 16, 768, 'line_green')
-        topLine.anchor.setTo(0.5,0.5)
-        topLine.alpha = 1
-        topLine.angle = 90
-        topLine.animations.add('lineMove')
-        topLine.animations.play('lineMove', 100, true)
-        layerBackground.add(topLine)
-
-        let bottomLine = game.add.tileSprite(game.world.width / 2, 584, 16, 768, 'line_green')
-        bottomLine.anchor.setTo(0.5,0.5)
-        bottomLine.alpha = 1
-        bottomLine.angle = 270
-        bottomLine.animations.add('lineMove')
-        bottomLine.animations.play('lineMove', 100, true)
-        layerBackground.add(bottomLine)
-
-        let squareTopLeft = game.add.sprite(16,16,"square")
-        squareTopLeft.anchor.setTo(0.5,0.5)
-        layerBackground.add(squareTopLeft)
-
-        let squareTopRight = game.add.sprite(784,16,"square")
-        squareTopRight.anchor.setTo(0.5,0.5)
-        layerBackground.add(squareTopRight)
-
-        let squareBottomRight = game.add.sprite(784,584,"square")
-        squareBottomRight.anchor.setTo(0.5,0.5)
-        layerBackground.add(squareBottomRight)
-
-        let squareBottomLeft = game.add.sprite(16,584,"square")
-        squareBottomLeft.anchor.setTo(0.5,0.5)
-        layerBackground.add(squareBottomLeft)
-
-        let squareMidTop = game.add.sprite(game.world.width / 2,16,"square")
-        squareMidTop.anchor.setTo(0.5,0.5)
-        layerBackground.add(squareMidTop)
-
-        let squareMideBottom = game.add.sprite(game.world.width / 2,584,"square")
-        squareMideBottom.anchor.setTo(0.5,0.5)
-        layerBackground.add(squareMideBottom)
-
-        let squareKickoff = game.add.sprite(game.world.width / 2,game.world.height / 2,"square")
-        squareKickoff.anchor.setTo(0.5,0.5)
-        layerBackground.add(squareKickoff)
-
-        // reset scores
-        scorePlayer1 = 0
-        scorePlayer2 = 0
-
-        // display scores
-        scoreTextPlayer1 = game.add.bitmapText(100, 125, 'mecha_blue', '' + scorePlayer1, 500)
-        scoreTextPlayer1.alpha = 0.1
-        layerBackground.add(scoreTextPlayer1)
-
-        scoreTextPlayer2 = game.add.bitmapText(475, 125, 'mecha_pink', '' + scorePlayer2, 500)
-        scoreTextPlayer2.alpha = 0.15
-        layerBackground.add(scoreTextPlayer2)
+        // create scoreboard
+        scoreBoard = new ScoreBoad(game)
 
         // create particle emitters for winning explosion
         player1GoalEmitter = new GoalEmitter(game, layerGameObjects, ['particle1_blue','particle2_blue','particle3_blue'])
@@ -118,40 +28,25 @@ let playState = {
         this.createWall(-25,0,sideWalls,25,600,"left")
         this.createWall(800,0,sideWalls,25,600,"right")
 
-        // create paddles / players
+        // create paddles
         paddles = this.createCollisionGroup()
-        layerGameObjects.add(paddles)
-
-        paddle1 = this.createPaddle(55,game.world.centerY,paddles,"player1")
-
-        paddle1TraceEmitter = game.add.emitter(-1000,-1000,500)
 
         paddle1TraceEmitter = new TraceEmitter(game, layerGameObjects, 'paddle_blue', 0.1)
-
-        paddle2 = this.createPaddle(game.world.width - 55,game.world.centerY,paddles,"player2")
+        paddle1 = new Paddle(game, 55, game.world.centerY, "player1", paddles)
 
         paddle2TraceEmitter = new TraceEmitter(game, layerGameObjects, 'paddle_pink', 0.1)
+        paddle2 = new Paddle(game, game.world.width - 55, game.world.centerY, "player2", paddles)
+        
+        layerGameObjects.add(paddles)
 
-        // create ball
-        // ball = this.createBall(game.world.centerX, game.world.centerY)
-        ball = new Ball(game, game.world.centerX, game.world.centerY)
-        layerGameObjects.add(ball)
-
-        // create emitters for the ball
+        // create emitters for the ball and create ball
         wallBounceEmitter = new BounceEmitter(game, layerGameObjects, ['particle1_green','particle2_green','particle3_green'])
         player1BounceEmitter  = new BounceEmitter(game, layerGameObjects, ['particle1_blue','particle2_blue','particle3_blue'])
         player2BounceEmitter  = new BounceEmitter(game, layerGameObjects, ['particle1_pink','particle2_pink','particle3_pink'])
-
         ballTraceEmitter = new TraceEmitter(game, layerGameObjects, 'trace', 0.5)
 
-        // pre-emit all emitters off screen to prevent initial fps drop on first emit
-        // this.emitBounceParticles(wallBounceEmitter)        
-        // this.emitBounceParticles(player1BounceEmitter)
-        // this.emitBounceParticles(player2BounceEmitter)
-
-        // start emitting the paddle trace emitters
-        // this.emitTraceParticles(paddle1TraceEmitter)
-        // this.emitTraceParticles(paddle2TraceEmitter)
+        ball = new Ball(game, game.world.centerX, game.world.centerY)
+        layerGameObjects.add(ball)
 
         // set up goal texts
         goalTextBackgroundBox = game.add.sprite(game.world.width / 2, game.world.height / 2, 'wall')
@@ -182,10 +77,10 @@ let playState = {
         let that = this
 
         // handle user input via mouse
-        this.controlPaddle(paddle1, game.input.y)
+        paddle1.setY(game.input.y)
 
         // handle second (CPU) paddle movement --> perfect enemy, always hits the ball
-        // this.controlPaddle(paddle2, ball.y)
+        paddle2.setY(ball.y)
 
         // Ball Collision Detection
         
@@ -205,8 +100,8 @@ let playState = {
             game.camera.shake(0.03, 1000)
 
             if(sideWalls.name === "left"){
-                scorePlayer2++
-                that.updateText(scoreTextPlayer2,scorePlayer2)
+                scoreBoard.updateScorePlayer2()
+
                 player2GoalEmitter.fire()
 
                 // configure tween
@@ -238,8 +133,8 @@ let playState = {
                 tween.start()
 
             } else if (sideWalls.name === "right") {
-                scorePlayer1++
-                that.updateText(scoreTextPlayer1,scorePlayer1)
+                scoreBoard.updateScorePlayer1()
+
                 player1GoalEmitter.fire()
 
                 // configure tween
@@ -272,8 +167,6 @@ let playState = {
                 tween.start()
 
             }
-
-            that.checkScore()
         })
 
         // collision with paddles
@@ -299,62 +192,6 @@ let playState = {
         ballTraceEmitter.updatePosition(ball.body.x + 0.5 * ball.width,ball.body.y + 0.5 * ball.height)
     },
 
-    checkScore: function() {
-
-
-        if(scorePlayer1 === 10 || scorePlayer2 === 10) {
-            scorePlayer1 = 0
-            scorePlayer2 = 0
-            this.updateText(scoreTextPlayer1,scorePlayer1)
-            this.updateText(scoreTextPlayer2,scorePlayer2)
-        }
-    },
-
-    updateText: function(textObject,newText) {
-        textObject.setText(newText)
-
-        const newAlpha = 1
-        const oldAlpha = textObject.alpha
-        
-        // configure tween
-        const easing = Phaser.Easing.Exponential.In
-        const autoStart = false
-        const delay = 0
-        const repeat = 0
-        const yoyo = false
-
-        // tween (fast) to new alpha and (slow) back to old one
-        game.add.tween(textObject)
-        .to( { alpha: newAlpha }, 1, easing, autoStart, delay, repeat, yoyo)
-        .to( { alpha: oldAlpha }, 1000, easing, autoStart, delay, repeat, yoyo)
-        .start()
-    },
-
-    emitBounceParticles: function(emitter) {
-        const explode = true
-        const lifeSpan = 1000
-        const amount = 10
-
-        emitter.start(explode, lifeSpan, null, amount)
-    },
-
-    emitTraceParticles: function(emitter) {
-        const explode = false
-        const lifeSpan = 500
-        const particlesPerFrame = 1
-
-        emitter.start(explode, lifeSpan, particlesPerFrame)
-    },
-
-    emitWinParticles: function(emitter) {
-        const explode = true
-        const lifeSpan = 2000
-        const amount = 100
-
-        emitter.start(explode, lifeSpan, null, amount)
-    },
-
-
     createCollisionGroup: function() {
         let group = game.add.group()
         group.enableBody = true
@@ -372,39 +209,5 @@ let playState = {
         wall.alpha = 0
         
         return wall
-    },
-
-    createPaddle: function(x,y, group, name) {
-        let paddle
-        
-        if(name === "player1") {
-            paddle = group.create(x,y,"paddle_blue")
-        } else if (name === "player2") {
-            paddle = group.create(x,y,"paddle_pink")        
-        }
-            
-        paddle.anchor.setTo(0.5,0.5)
-        
-        game.physics.arcade.enable(paddle)
-        
-        paddle.body.collideWorldBounds = true
-
-        paddle.body.immovable = true
-        
-        paddle.name = name
-
-        paddle.smoothed = false
-
-        return paddle
-    },
-
-    controlPaddle: function(paddle,y) {
-        paddle.y = y
-        
-        if(paddle.y < paddle.height / 2){
-            paddle.y = paddle.height / 2
-        } else if (paddle.y > game.world.height - paddle.height / 2) {
-            paddle.y = game.world.height - paddle.height / 2
-        }
     }
 }
