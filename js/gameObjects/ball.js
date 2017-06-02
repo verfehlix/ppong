@@ -100,7 +100,7 @@ class Ball extends Phaser.Sprite {
             this.body.velocity.y = rand
             this.body.velocity.x = leftRight * (max - rand)
             
-            this.body.angularVelocity = game.rnd.integerInRange(-300,300)
+            this.body.angularVelocity = game.rnd.integerInRange(-100,100)
 
             // debug launch
             // this.body.velocity.y = 0
