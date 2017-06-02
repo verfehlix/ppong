@@ -87,11 +87,15 @@ class Ball extends Phaser.Sprite {
         if(paddle.name === "player1"){
             this.player1BounceEmitter.fire()
             // set spin
-            this.body.angularVelocity += (this.deltaY - paddle.deltaY) / 0.02
+            if(paddle.deltaY > 5) {
+                this.body.angularVelocity += (this.deltaY - paddle.deltaY) / 0.02
+            }
         } else if (paddle.name === "player2") {
             this.player2BounceEmitter.fire()
             // set spin
-            this.body.angularVelocity += - (this.deltaY - paddle.deltaY) / 0.02
+            if(paddle.deltaY > 5) {
+                this.body.angularVelocity += - (this.deltaY - paddle.deltaY) / 0.02
+            }
         }
     }
 
@@ -107,7 +111,7 @@ class Ball extends Phaser.Sprite {
             this.body.velocity.y = rand
             this.body.velocity.x = leftRight * (max - rand)
             
-            this.body.angularVelocity = game.rnd.integerInRange(-100,100)
+            // this.body.angularVelocity = game.rnd.integerInRange(-100,100)
 
             // debug launch
             // this.body.velocity.y = 0
