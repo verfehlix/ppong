@@ -60,6 +60,10 @@ class Ball extends Phaser.Sprite {
         game.camera.shake(0.01, 100)
         this.wallBounceEmitter.updateFireDirection(wallName)
         this.wallBounceEmitter.fire()
+
+        // daemmen
+        this.body.angularVelocity = this.body.angularVelocity / 2
+
     }
 
     handleGoalCollision(goalName) {
@@ -76,6 +80,9 @@ class Ball extends Phaser.Sprite {
 
     handlePaddleCollision(paddle) {
         game.camera.shake(0.01, 100)
+
+        // daemmen
+        this.body.angularVelocity = this.body.angularVelocity / 2
         
         if(paddle.name === "player1"){
             this.player1BounceEmitter.fire()
