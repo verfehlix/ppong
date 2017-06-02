@@ -8,9 +8,12 @@ class Ball extends Phaser.Sprite {
 
         // set the physics properties
         game.physics.arcade.enable(this)
-        this.body.bounce.setTo(1.05,1.05)
+        this.body.bounce.setTo(1.05,1.05)        
+        this.body.angularDrag = 50
+        this.body.maxAngular = 300
 
         // set custom properties
+        this.maxSpeed = 1200
         this.isLaunched = false
 
         // create particle emitters for the ball
@@ -24,17 +27,26 @@ class Ball extends Phaser.Sprite {
     }
 
     update() {
+        
+        // calculate ball spin
+        const ballVelocity = Math.sqrt(Math.pow(this.body.velocity.x,2) + Math.pow(this.body.velocity.y,2))
+        const normalizedXVelocity = this.body.velocity.x / ballVelocity
+        const normalizedYVelocity = this.body.velocity.y / ballVelocity
+        const acceleration = 0.00003 * ballVelocity * this.body.angularVelocity
+        this.body.velocity.x -= normalizedYVelocity * acceleration
+        this.body.velocity.y += normalizedXVelocity * acceleration
+
         // cap velocity
         if(this.body.velocity.x > 0) {
-            this.body.velocity.x = Math.min(this.body.velocity.x, 1200)
+            this.body.velocity.x = Math.min(this.body.velocity.x, this.maxSpeed)
         } else {
-            this.body.velocity.x = Math.max(this.body.velocity.x, -1200)            
+            this.body.velocity.x = Math.max(this.body.velocity.x, -this.maxSpeed)            
         }
 
         if(this.body.velocity.y > 0) {
-            this.body.velocity.y = Math.min(this.body.velocity.y, 1200)
+            this.body.velocity.y = Math.min(this.body.velocity.y, this.maxSpeed)
         } else {
-            this.body.velocity.y = Math.max(this.body.velocity.y, -1200)            
+            this.body.velocity.y = Math.max(this.body.velocity.y, -this.maxSpeed)            
         }
 
         // Update Ball Emitter Positions
@@ -62,13 +74,17 @@ class Ball extends Phaser.Sprite {
         }
     }
 
-    handlePaddleCollision(paddleName) {
+    handlePaddleCollision(paddle) {
         game.camera.shake(0.01, 100)
         
-        if(paddleName === "player1"){
+        if(paddle.name === "player1"){
             this.player1BounceEmitter.fire()
-        } else if (paddleName === "player2") {
+            // set spin
+            this.body.angularVelocity += (this.deltaY - paddle.deltaY) / 0.02
+        } else if (paddle.name === "player2") {
             this.player2BounceEmitter.fire()
+            // set spin
+            this.body.angularVelocity += - (this.deltaY - paddle.deltaY) / 0.02
         }
     }
 
@@ -76,26 +92,19 @@ class Ball extends Phaser.Sprite {
         if(this.isLaunched){
             this.reset()
         } else {
-            let plusMinus1 = game.rnd.integerInRange(0,1)
-            let plusMinus2 = game.rnd.integerInRange(0,1)
+            // normal launch
+            const max = 800
+            const rand = game.rnd.integerInRange(100, 300)
+            const leftRight = (Math.random() > 0.5 ? 1 : -1)
 
-            let factor1
-            let factor2
+            this.body.velocity.y = rand
+            this.body.velocity.x = leftRight * (max - rand)
+            
+            this.body.angularVelocity = game.rnd.integerInRange(-300,300)
 
-            if(plusMinus1 === 1){
-                factor1 = 1
-            } else {
-                factor1 = -1
-            }
-
-            if(plusMinus2 === 1){
-                factor2 = 1
-            } else {
-                factor2 = -1
-            }
-
-            ball.body.velocity.x = factor1 * game.rnd.integerInRange(450, 500)
-            ball.body.velocity.y = factor2 * game.rnd.integerInRange(450, 500)
+            // debug launch
+            // this.body.velocity.y = 0
+            // this.body.velocity.x = - 300
 
             this.isLaunched = true
         }

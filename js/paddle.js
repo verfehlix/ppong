@@ -10,6 +10,7 @@ class Paddle extends Phaser.Sprite {
             Phaser.Sprite.call(this, game, x, y, "paddle_pink")
         }
         this.anchor.setTo(0.5,0.5)
+        this.scale.setTo(1,1)
 
         // set the physics properties
         game.physics.arcade.enable(this)
@@ -18,7 +19,6 @@ class Paddle extends Phaser.Sprite {
         
         // set custom properties
         this.name = name
-
 
         // add it to the game
         game.add.existing(this)
@@ -40,12 +40,19 @@ class Paddle extends Phaser.Sprite {
             
             // handle player movement via mouse
             this.setY(game.input.y)
+
+            // for CPU vs CPU
             // this.setY(ball.y)
+
 
         } else if(this.name === "player2") {
             
             // perfect CPU movement --> cannot be beaten 
             this.setY(ball.y)
+            
+            // for mirror input
+            // this.setY(game.input.y)
+
         }
 
         // Update Paddle Trace Emitter

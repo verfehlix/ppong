@@ -40,6 +40,9 @@ let playState = {
     },
 
     update: function() {
+
+        // console.log("Angular Velocity: " + ball.body.angularVelocity)
+
         // Ball collision with bottom & top walls
         game.physics.arcade.collide(ball, topBottomWalls, function(ball, topBottomWalls){
             ball.handleWallCollision(topBottomWalls.name)
@@ -52,7 +55,7 @@ let playState = {
 
         // Ball collision with paddles
         game.physics.arcade.collide(ball, paddles, function(ball, paddles){
-            ball.handlePaddleCollision(paddles.name)
+            ball.handlePaddleCollision(paddles)
         })
     },
 
