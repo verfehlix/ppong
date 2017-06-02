@@ -9,7 +9,7 @@ class Ball extends Phaser.Sprite {
         // set the physics properties
         game.physics.arcade.enable(this)
         this.body.bounce.setTo(1.05,1.05)        
-        this.body.angularDrag = 50
+        this.body.angularDrag = 150
         this.body.maxAngular = 300
 
         // set custom properties
@@ -87,13 +87,13 @@ class Ball extends Phaser.Sprite {
         if(paddle.name === "player1"){
             this.player1BounceEmitter.fire()
             // set spin
-            if(paddle.deltaY > 5) {
+            if(paddle.deltaY > 5 || paddle.deltaY < -5) {
                 this.body.angularVelocity += (this.deltaY - paddle.deltaY) / 0.02
             }
         } else if (paddle.name === "player2") {
             this.player2BounceEmitter.fire()
             // set spin
-            if(paddle.deltaY > 5) {
+            if(paddle.deltaY > 5 || paddle.deltaY < -5) {
                 this.body.angularVelocity += - (this.deltaY - paddle.deltaY) / 0.02
             }
         }
