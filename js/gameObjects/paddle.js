@@ -20,18 +20,20 @@ class Paddle extends Phaser.Sprite {
         // set custom properties
         this.name = name
 
-        // add it to the game
-        game.add.existing(this)
-
-        // add it to the group
-        group.add(this)
-
         // add trace emitters
         if(name === "player1") {
             this.traceEmitter = new TraceEmitter(game, layerGameObjects, 'paddle_blue', 0.1)
         } else if (name === "player2") {
             this.traceEmitter = new TraceEmitter(game, layerGameObjects, 'paddle_pink', 0.1)
         }
+
+        // add it to the game
+        game.add.existing(this)
+
+        // add it to the group
+        group.add(this.traceEmitter.emitter)
+        group.add(this)
+
     }
 
     update() {
