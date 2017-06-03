@@ -38,7 +38,7 @@ let loadState = {
         game.physics.startSystem(Phaser.Physics.ARCADE)
 
         // transition to play state
-        game.state.start("play")
+        game.state.start("menu")
     
     }
 }

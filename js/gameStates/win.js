@@ -150,7 +150,7 @@ let winState = {
 
         menuBox.inputEnabled = true;
         menuBox.events.onInputDown.add(function(){
-            alert("there is no main menu yet.")
+            game.state.start("menu")
         }, this);
         menuBox.events.onInputOver.add(function(){
             menuTween.resume()
